@@ -10,7 +10,6 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="/scripts/checkRTCSupport.js"></script>
   <script src="/scripts/objext.js"></script>
-  <script src="/scripts/event.js"></script>
   <script src="/scripts/eventTarget.js"></script>
   <script src="/scripts/defineEventProperty.js"></script>
   <script src="/scripts/signallingchannel.js"></script>
@@ -20,7 +19,8 @@
 
 
     if (checkIfWebRTC && checkIfORTC){
-      scripts.setAttribute('src', '/scripts/webrtc-peer.js');
+      scripts.setAttribute('src', '/scripts/webrtc-peer.js') ||
+      scripts.setAttribute('src', '/scripts/ortc-peer.js');
     }
     else if (checkIfORTC && checkIfWebRTC !== true)
       scripts.setAttribute('src', '/scripts/ortc-peer.js');

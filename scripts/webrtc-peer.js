@@ -654,14 +654,7 @@ signalingChannel.onmessage = function (evt) {
       
       // if we received an offer, we need set up the stream to send the answer
       if (pc.remoteDescription.type == "offer"){
-        navigator.mediaDevices.getUserMedia({ 
-                "audio": true, 
-                "video": true
-            }).then( 
-                gotMedia
-            ).catch( 
-                gotMediaError
-            );
+            initiateConnection();
           }
         }, logError);
   }

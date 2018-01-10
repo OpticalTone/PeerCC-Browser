@@ -1,0 +1,96 @@
+.block-note--error p {
+	max-width: none;
+}
+.section{
+  margin: 0;
+}
+.strong {
+	font-weight: 600;
+}
+
+#previewVideo,
+#videoholder {
+    background-color: #000;
+}
+
+.connect-form,
+.ortc-status {/*
+	margin-top: 3.2rem;
+	padding-top: 3.2rem;*/
+	border-top: 1px solid #d2d2d2;
+}c
+
+.modal {
+    background-color: rgba(0,0,0,.5);
+}
+
+.modal__footer button:only-child {
+	float: none;
+}
+
+.ortc-status__title,
+.ortc-status__description {
+	display: inline;
+}
+
+/* Styles for when layout is not stacked */
+@media (min-width: 48em) {
+	
+  .button 
+  {
+    width: 100%;
+  }
+
+}
+
+@media (min-width: 48em) and (max-width: 64em) {
+
+	.layout--sidebar > .module--secondary {
+		width: 28rem;
+	}
+
+	.layout--sidebar > .module--primary {
+		float: right;
+		width: calc(100% - 34rem);
+	}
+
+}
+
+h2 {
+  font: 400 40px/1.5 Helvetica, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+ 
+li {
+  font: 200 20px/1.5 Helvetica, Verdana, sans-serif;
+  border-bottom: 1px solid #ccc;
+}
+ 
+li:last-child {
+  border: none;
+}
+ 
+li a {
+  text-decoration: none;
+  color: #000;
+  display: block;
+  width: 200px;
+ 
+  -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -o-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
+  transition: font-size 0.3s ease, background-color 0.3s ease;
+}
+ 
+/*li a:hover {
+  font-size: 30px;
+  background: #f6f6f6;
+}*/

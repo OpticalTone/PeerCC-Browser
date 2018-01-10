@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://edgeportal.blob.core.windows.net/media/demotemplate.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/ortc-peer.css" type="text/css" />
+  <title>ORTC Peer</title>
+  <script src="node_modules/webrtc-adapter/out/adapter.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/scripts/checkRTCSupport.js"></script>
+  <script src="/scripts/objext.js"></script>
+  <script src="/scripts/event.js"></script>
+  <script src="/scripts/eventTarget.js"></script>
+  <script src="/scripts/defineEventProperty.js"></script>
+  <script src="/scripts/signallingchannel.js"></script>
+  <script>
+
+    var scripts = document.createElement("script");
+
+
+    if (checkIfWebRTC && checkIfORTC){
+      scripts.setAttribute('src', '/scripts/webrtc-peer.js');
+    }
+    else if (checkIfORTC && checkIfWebRTC !== true)
+      scripts.setAttribute('src', '/scripts/ortc-peer.js');
+    else
+      scripts.setAttribute('src', '/scripts/webrtc-peer.js');
+
+
+    document.head.appendChild(scripts);
+
+  </script>
+</head>
+<body>
+
+  <!-- DEMO -->
+  <section id="demo" class="section">
+    <div class="container">
+
+      <div class="layout layout--sidebar">
+        <div class="module module--secondary">
+          <section id="videoPreview">
+            <h4 class="base strong">Video Preview</h4>
+            <div>
+              <video id="previewVideo" width="248" height="140" autoplay muted></video>
+            </div>
+          </section>
+          <section class="connect-form">
+            <div class="layout layout--halves">
+              <h2>Contacts</h2>
+              <ul id="contactList">
+              </ul>
+            </div>
+            <div class="layout layout--halves">
+              <div class="module">
+                <label>Server Address</label>
+                <!-- server ip value - change after testing  -->
+                <input id="peer-id" type="text" onclick="this.select();" value="40.83.179.150">
+              </div>
+              <div class="module">
+                <label>Server Port</label>
+                <input id="peer-key" type="text" onclick="this.select();" value="8888">
+              </div>
+            </div>
+            <input id="call_btn" class="button button--primary button--page-primary" type="button" value="Call" disabled>
+            <input id="connect_btn" class="button button--primary button--page-primary" type="button" value="Connect">
+          </section>
+
+          <!-- STATUS FOOTER -->
+          <section id="footer" class="ortc-status">
+            <div id="status">
+              <h4 class="ortc-status__title base strong">
+                <span>Status:</span>
+              </h4>
+              <p id="footer-status" class="ortc-status__description">Ready...</p>
+            </div>
+          </section>
+        </div>
+        <div id="connection" class="module module--primary">
+          <h4 class="base strong">Peer video</h4>
+          <div id="videoholder">
+            <video id="rtcRenderer" width="100%" height=500 autoplay></video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALERT BOX -->
+  <div id="disabler" class="modal">
+    <div id="alert-box" class="modal-dialog" tabindex="-1">
+      <header id="alert-header" class="modal__header">
+        <h1 id="modal-title" class="subtitle">Alert</h1>
+      </header>
+      <div id="modal-body" class="modal__body">
+        <p id="message"></p>
+      </div>
+      <div class="modal__footer">
+        <button id="alert-ok-btn">Okay</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

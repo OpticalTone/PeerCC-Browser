@@ -442,7 +442,6 @@
 
 
 function getMedia() {
-console.warn("GET MEDIA");
   // Get a local stream
   navigator.mediaDevices.getUserMedia({ 
       "audio": true, 

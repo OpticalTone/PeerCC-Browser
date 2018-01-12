@@ -13,24 +13,7 @@
   <script src="/scripts/eventTarget.js"></script>
   <script src="/scripts/defineEventProperty.js"></script>
   <script src="/scripts/signallingchannel.js"></script>
-  <script>
-
-    var scripts = document.createElement("script");
-
-
-    if (checkIfWebRTC && checkIfORTC){
-      scripts.setAttribute('src', '/scripts/webrtc-peer.js') ||
-      scripts.setAttribute('src', '/scripts/ortc-peer.js');
-    }
-    else if (checkIfORTC && checkIfWebRTC !== true)
-      scripts.setAttribute('src', '/scripts/ortc-peer.js');
-    else
-      scripts.setAttribute('src', '/scripts/webrtc-peer.js');
-
-
-    document.head.appendChild(scripts);
-
-  </script>
+  <script src="/scripts/RTC.js"></script>
 </head>
 <body>
 

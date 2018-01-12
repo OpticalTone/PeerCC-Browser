@@ -26,6 +26,24 @@ checkIfORTCSupported();
         return false;
     }
 
+function checkPeerSupport(peerName){
+  if(peerName && peerName.lastIndexOf("-") > 0){
+    peerName = peerName.toUpperCase();
+    peerName = peerName.replace(/['"]+/g, '');
+    let indexDual = peerName.lastIndexOf("-");
+    let string = '';
+    for(let i = indexDual+1; i < peerName.length; i++){
+      string += peerName[i];
+    }
+    if(string === "DUAL" || string === "JSON")
+        return string;
+    else
+        return false;
+  }
+  else
+    return false;
+}
+
     ['RTCPeerConnection', 'webkitRTCPeerConnection', 'mozRTCPeerConnection', 'RTCIceGatherer'].forEach(function (item) {
         if (checkIfWebRTC) {
             return;

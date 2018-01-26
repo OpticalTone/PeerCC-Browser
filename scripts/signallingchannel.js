@@ -63,7 +63,8 @@
         }
 
         anHttpRequest.open("POST", aUrl, true);
-        anHttpRequest.setRequestHeader('Content-Length', message.lenght);
+        if(window.navigator.userAgent.indexOf("Edge") > -1)
+            anHttpRequest.setRequestHeader('Content-Length', message.lenght);
         anHttpRequest.setRequestHeader('Content-Type', "text/plain");
         anHttpRequest.send(message);
       }

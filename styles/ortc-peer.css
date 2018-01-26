@@ -77,9 +77,9 @@ li:last-child {
   border: none;
 }
  
+ 
 li a {
   text-decoration: none;
-  color: #000;
   display: block;
   width: 200px;
  
@@ -89,7 +89,14 @@ li a {
   -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
   transition: font-size 0.3s ease, background-color 0.3s ease;
 }
- 
+
+.contact a:focus{
+  color: LimeGreen;
+}
+#contactList{
+  margin: 0 0 15px 0;
+  border-bottom: 1px solid #ccc;
+}
 /*li a:hover {
   font-size: 30px;
   background: #f6f6f6;

@@ -16,6 +16,7 @@
     "use strict";
 
     var pc;
+    var state;
     var sigCh = null;
     var iceGathr = null;
     var iceTr = null;
@@ -118,12 +119,6 @@
           document.getElementById("call_btn")
           .addEventListener("click", onCallButtonPressed);
 
-            document.getElementById("alert-ok-btn")
-            .addEventListener("click", closeAlert);
-
-            document.getElementById("alert-box")
-            .addEventListener("keypressed", closeAlert);
-
             var ul = document.getElementById("contactList");
             ul.onclick = function (event) {
               var target = getEventTarget(event);
@@ -165,14 +160,14 @@
           address: elServerAddress.value,
           port: elServerPort.value
         });
-        document.body.style.cursor = "wait";
+        document.body.style.cursor = "progress";
         sigCh.start(info);
       }
     }
 
     function disconnectFromServer() {
       if (sigCh) {
-        document.body.style.cursor = "wait";
+        document.body.style.cursor = "progress";
         sigCh.close();
       }
     }
@@ -195,6 +190,31 @@
 
     function start() {
       pc = new RTCPeerConnection(configuration);
+
+        pc.onicegatheringstatechange = function() {
+          switch(pc.iceGatheringState) {
+            case "new":
+            case "complete":
+            if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) === false){
+                signalMessage(JSON.stringify({
+                  "candidate": 'endOfCandidates'
+                }));
+                console.log("Ice gathering completed.");
+            }
+              break;
+            case "gathering":
+              break;
+          }
+        }
+
+          
+        //display remote track in the video element
+        pc.ontrack = function(event){
+        videoRenderer = document.getElementById("rtcRenderer");
+        videoRenderer.srcObject = event.streams[0];
+        console.log("Remote track resceved");
+        document.body.style.cursor = "default";
+        }
       updateServerStatus();
     }
 
@@ -210,7 +230,6 @@
     }
 
     function closeConnection(softClose) {
-
         if (audioSender) {
             audioSender.stop();
         }
@@ -256,7 +275,8 @@
         sendVideoCaps = null;
         receiveVideoCaps = null;
         receiveAudioCaps = null;
-        selfInfo = {};
+        selectedContactName = null;
+        selectedContactId = null;
 
         remoteCandidates = [];
         localCandidatesCreated = false;
@@ -284,10 +304,6 @@
             local_audio_MST = null; 
         }
         trackCount = 0;
-        if (!softClose) {
-            window.location.reload();
-
-        }
 
         // reset video tags and release capture devices 
         if(videoRenderer){
@@ -309,6 +325,16 @@
         renderStream = null; 
         }
     
+
+        if (!softClose) {
+            if(pc){
+                pc.close();
+                pc = null;
+            }
+            selfInfo = {};
+            window.location.reload();
+        }
+
         updateCallStatus(true);
     }
 
@@ -367,8 +393,6 @@
     function hangup() {
       if (isBusy) {
         signalMessage(JSON.stringify({ disconnect: 'disconnect' }));
-
-        //closeConnection();
       }
       else {
         alert("Not in call, cannot hangup");
@@ -392,7 +416,7 @@
         else {
             document.getElementById("call_btn").value = "End Call";
             isBusy = true;
-            document.body.style.cursor = "wait";
+            document.body.style.cursor = "progress";
         }
     }
 
@@ -526,14 +550,10 @@ function localDescCreated(desc) {
 
         updateCallStatus();
 
-        var iceOptions = { "gatherPolicy": "all", 
-            "iceServers": 
-                [{ "urls": 
-                    "turn:turn-testdrive.cloudapp.net:3478?transport=udp", 
-                    "username": "redmond", 
-                    "credential": "redmond123" 
-                }] };
+        var iceOptions = { "gatherPolicy": "all", "iceServers": [{ "urls": "turn:turn-testdrive.cloudapp.net:3478?transport=udp", "username": "redmond", "credential": "redmond123" }] };
 
+        // the following will work for testing within the same network (i.e. no relay)
+        //var iceOptions = { "gatherPolicy": "all", "iceServers": [] };
 
         iceGathr = new RTCIceGatherer(iceOptions);
         iceTr = new RTCIceTransport(); 
@@ -566,17 +586,13 @@ function localDescCreated(desc) {
                 }));
 
                 if(remoteIceParams){
-                    iceTr.start(iceGathr, remoteIceParams, 
-                        (selfInfo.dtlsRole && 
-                            selfInfo.dtlsRole === "client" ? "controlled" 
-                            : "controlling" ));
+                    iceTr.start(iceGathr, remoteIceParams, (selfInfo.dtlsRole && selfInfo.dtlsRole === "client" ? "controlled" : "controlling" ));
 
                     dtlsTr.start(remoteDtlsParams);
                 }
             }
             else {
-                addToLog("Local ICE candidate: " + evt.candidate.ip + ":" 
-                    + evt.candidate.port);
+                addToLog("Local ICE candidate: " + evt.candidate.ip + ":" + evt.candidate.port);
             }
         };
 
@@ -598,17 +614,13 @@ function localDescCreated(desc) {
                 }));
 
                 if(remoteIceParams_2){
-                    iceTr_2.start(iceGathr_2, remoteIceParams_2, 
-                        (selfInfo.dtlsRole && 
-                            selfInfo.dtlsRole === "client" ? "controlled" 
-                            : "controlling" ));
+                    iceTr_2.start(iceGathr_2, remoteIceParams_2, (selfInfo.dtlsRole && selfInfo.dtlsRole === "client" ? "controlled" : "controlling" ));
 
                     dtlsTr_2.start(remoteDtlsParams_2);
                 }
             }
             else {
-                addToLog("Local ICE candidate_2: " + evt.candidate.ip + ":" 
-                    + evt.candidate.port);
+                addToLog("Local ICE candidate_2: " + evt.candidate.ip + ":" + evt.candidate.port);
             }
         };
 
@@ -664,13 +676,11 @@ function localDescCreated(desc) {
         };
 
         iceTr.oncandidatepairchange = function (evt) {
-            addToLog("ICE candidate pair changed to: " 
-                + JSON.stringify(evt.pair));
+            addToLog("ICE candidate pair changed to: " + JSON.stringify(evt.pair));
         };
 
         if(!allowBundle) iceTr_2.oncandidatepairchange = function (evt) {
-            addToLog("ICE candidate_2 pair changed to: " 
-                + JSON.stringify(evt.pair));
+            addToLog("ICE candidate_2 pair changed to: " + JSON.stringify(evt.pair));
         };
 
         iceGathr.onerror = function (evt) {
@@ -1001,16 +1011,10 @@ function localDescCreated(desc) {
         }
 
         if (alrt) {
-            showAlert(msg);
+            alert(msg);
         }
 
         addToLog(msg);
-    }
-
-    function showAlert(msg) {
-        document.getElementById("disabler").style.display = "block";
-        document.getElementById("alert-box").style.display = "block";
-        document.getElementById("message").innerHTML = msg;
     }
 
     function addToLog(msg) {
@@ -1019,13 +1023,6 @@ function localDescCreated(desc) {
 
     function logError(error) {
       console.log(error.name + ': ' + error.message);
-    }
-
-    function closeAlert() {
-        document.getElementById("disabler").style.display = "none";
-        document.getElementById("alert-box").style.display = "none";
-
-        if(isBusy)closeConnection();
     }
 
 
@@ -1059,6 +1056,7 @@ function localDescCreated(desc) {
                 var li = document.createElement("li");
 
                 li.setAttribute("id", "contact" + peer_information[1]);
+                li.className = "contact";
 
                 var a = document.createElement("a");
                 a.textContent = peer_information[0];
@@ -1162,31 +1160,26 @@ function localDescCreated(desc) {
         console.log("\n\n Remote SDP candidate:\n"
             +JSON.stringify(message.candidate)+"\n\n\n");
 
-        pc.addIceCandidate(new RTCIceCandidate(message.candidate));
+        if(window.navigator.userAgent.indexOf("Edge") > -1){
+            if(message.candidate == "endOfCandidates")
+                pc.addIceCandidate();
+            else
+                pc.addIceCandidate(new RTCIceCandidate(message.candidate));
+        }
+        else{            
+            if(message.candidate == "endOfCandidates")
+                console.log("End of candidates");
+            else
+                pc.addIceCandidate(new RTCIceCandidate(message.candidate));
+        }
         }
       }
 
       if(message.sdp){
 
         //set remote description after getting offer or answer from the other peer
-        pc.setRemoteDescription(message.sdp, 
-          function () {
+        pc.setRemoteDescription(message.sdp, function () {
 
-          videoRenderer = document.getElementById("rtcRenderer");
-          
-          //display remote track in the video element
-          pc.ontrack = function(event){
-            videoRenderer.srcObject = event.streams[0];
-            console.log("Remote track resceved");
-          }
-
-          //display remote stream in the video element
-          pc.onaddstream = function(event) {
-            videoRenderer.srcObject = event.stream;
-            console.log("Remote stream resceved");
-            document.body.style.cursor = "default";
-          }
-          
           // if we received an offer, we need set up the stream to send the answer
           if (pc.remoteDescription.type == "offer"){
                 getMedia();

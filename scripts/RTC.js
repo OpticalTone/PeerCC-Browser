@@ -192,15 +192,14 @@
       pc = new RTCPeerConnection(configuration);
 
         pc.onicegatheringstatechange = function() {
+          console.warn(pc.iceGatheringState);
           switch(pc.iceGatheringState) {
             case "new":
             case "complete":
-            if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) === false){
-                signalMessage(JSON.stringify({
-                  "candidate": 'endOfCandidates'
-                }));
-                console.log("Ice gathering completed.");
-            }
+              signalMessage(JSON.stringify({
+                "candidate": 'endOfCandidates'
+              }));
+              console.log("Ice gathering completed.");
               break;
             case "gathering":
               break;
@@ -1090,7 +1089,7 @@ function localDescCreated(desc) {
 
         if (message.connectrequest) {
             handleCallRequest(message);
-            if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) != false){
+            if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) != false && checkIfORTC){
                 selfInfo.dtlsRole = "client";
                 initiateConnection();
             }
@@ -1119,7 +1118,7 @@ function localDescCreated(desc) {
         }
 
         if (message.start && checkPeerSupport(
-            JSON.stringify(peerInfo.friendlyName)) != false) {
+            JSON.stringify(peerInfo.friendlyName)) != false && checkIfORTC) {
             selfInfo.dtlsRole = message.dtlsrole;
             initiateConnection();
         }
@@ -1161,8 +1160,10 @@ function localDescCreated(desc) {
             +JSON.stringify(message.candidate)+"\n\n\n");
 
         if(window.navigator.userAgent.indexOf("Edge") > -1){
-            if(message.candidate == "endOfCandidates")
-                pc.addIceCandidate();
+            if(message.candidate == "endOfCandidates"){
+              console.log("End of candidates - Edge");
+              pc.addIceCandidate();
+            }
             else
                 pc.addIceCandidate(new RTCIceCandidate(message.candidate));
         }

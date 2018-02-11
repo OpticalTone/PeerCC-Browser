@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <link rel="stylesheet" href="https://edgeportal.blob.core.windows.net/media/demotemplate.css" type="text/css" />
-  <link rel="stylesheet" href="/styles/ortc-peer.css" type="text/css" />
-  <title>ORTC Peer</title>
+  <link rel="stylesheet" href="/styles/rtc-peer.css" type="text/css" />
+  <title>RTC Peer</title>
   <script src="node_modules/webrtc-adapter/out/adapter.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/scripts/checkRTCSupport.js"></script>
@@ -16,7 +16,6 @@
   <script src="/scripts/RTC.js"></script>
 </head>
 <body>
-
   <!-- DEMO -->
   <section id="demo" class="section">
     <div class="container">
@@ -31,6 +30,16 @@
           </section>
           <section class="connect-form">
             <div class="layout layout--halves">
+              <div id="showName">
+                <h3>Your name: </h3>
+                <p id="name"></p>
+              </div>
+              <div id="changeName">
+                <h3>Change name: </h3>
+                <input type="text" id = "changeValue">
+                <input type="button" value="Change" onclick="changeName()" class="button button--primary button--page-primary">
+              </div>
+              
               <h2>Contacts</h2>
               <ul id="contactList">
               </ul>

@@ -97,7 +97,16 @@ li a {
   margin: 0 0 15px 0;
   border-bottom: 1px solid #ccc;
 }
-/*li a:hover {
-  font-size: 30px;
-  background: #f6f6f6;
-}*/
+#showName{
+  text-align: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+#showName>p{
+  margin: 10px;
+  font-weight: bold;
+  font-size: 20px;
+}
+#changeName>*{
+  margin-bottom: 5px;
+}

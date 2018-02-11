@@ -106,6 +106,7 @@
         document.getElementById("connect_btn").enabled;
         document.getElementById("call_btn").value = "Call";
         document.getElementById("call_btn").disabled;
+        document.getElementById("changeName").style.display = "initial";
 
         initialize();
     };
@@ -132,6 +133,13 @@
             contacts = new Map();
             sigCh = new global.SignallingChannel();
             sigCh.onmessage = handleMessages;
+
+            // remove saved name
+            // localStorage.removeItem("name");
+
+            if(localStorage['name']){
+              document.getElementById('name').innerHTML = localStorage['name'];
+            }
         }
         catch (e) {
             showMessage(e.message || e, true);
@@ -161,6 +169,9 @@
           port: elServerPort.value
         });
         document.body.style.cursor = "progress";
+
+        document.getElementById("changeName").style.display = "none";
+
         sigCh.start(info);
       }
     }
@@ -169,6 +180,7 @@
       if (sigCh) {
         document.body.style.cursor = "progress";
         sigCh.close();
+        document.getElementById("changeName").style.display = "initial";
       }
     }
 
@@ -1023,6 +1035,7 @@ function localDescCreated(desc) {
     function logError(error) {
       console.log(error.name + ': ' + error.message);
     }
+
 
 
 // Function that handles changers to the signalingChannel - server 

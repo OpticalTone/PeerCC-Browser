@@ -21,10 +21,11 @@
     var peer_id = null;
     var pollHttp = null;
     var isConnected = false;
-    var peerConnectionServer = null; //'http://192.168.1.72:8888/';
+    var peerConnectionServer = null;
     var signInMethod = '/sign_in?';
     var waitMethod = "/wait?peer_id=";
     var signOutMethod = "/sign_out?peer_id=";
+    var selfId = null;
 
     function SignallingChannel() {
         EventTarget.call(this);
@@ -103,6 +104,8 @@
 
         var selfInfo = data.selfInfo;
         var peerInfo = data.peerInfo;
+
+        selfId = selfInfo.id;
 
         if (data.clientlist) {
             console.log('SEND clientlist');
@@ -350,12 +353,20 @@
       peerConnectionServer = "http://" + info.address + ":" + info.port;
 
       var name;  
+      var randomName;
+      if(!localStorage['name']){
+        randomName = "Peer: " + Math.floor((Math.random() * 100000) + 1);
+        document.getElementById('name').innerHTML = randomName;
+      } else{
+        randomName = localStorage['name'] || 'defaultValue';
+      }
+      
       if (checkIfWebRTC && checkIfORTC)
-          name = location.host + "-dual";
+          name = randomName + "-dual";
       else if (checkIfORTC && checkIfWebRTC !== true)
-          name = location.host + "-json";
+          name = randomName + "-json";
       else
-          name =location.host;
+          name = randomName;
 
       aClient.get(peerConnectionServer + signInMethod + name, function (header, response) {
         // do something with response

@@ -5,6 +5,7 @@
   <meta charset="utf-8" />
   <link rel="stylesheet" href="https://edgeportal.blob.core.windows.net/media/demotemplate.css" type="text/css" />
   <link rel="stylesheet" href="/styles/rtc-peer.css" type="text/css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RTC Peer</title>
   <script src="node_modules/webrtc-adapter/out/adapter.js"></script>
   <script src="/socket.io/socket.io.js"></script>
@@ -34,11 +35,12 @@
                 <h3>Your name: </h3>
                 <p id="name"></p>
               </div>
-              <div id="changeName">
+              <form action="" id="changeName" onsubmit="changeName()">
                 <h3>Change name: </h3>
                 <input type="text" id = "changeValue">
-                <input type="button" value="Change" onclick="changeName()" class="button button--primary button--page-primary">
-              </div>
+                <input type="submit" value="Change" class="button button--primary button--page-primary"> 
+                
+              </form>
               
               <h2>Contacts</h2>
               <ul id="contactList">
@@ -46,7 +48,7 @@
             </div>
             <div class="layout layout--halves">
                 <!-- server ip value - change after testing  -->
-                <input id="peer-id" type="hidden" onclick="this.select();" value="peercc-server.ortclib.org">
+                <input id="peer-id" type="hidden" onclick="this.select();" value="peercc-server.ortclib.org"> <!-- peercc-server.ortclib.org -->
                 <input id="peer-key" type="hidden" onclick="this.select();" value="8888">
             </div>
             <input id="call_btn" class="button button--primary button--page-primary" type="button" value="Call" disabled>

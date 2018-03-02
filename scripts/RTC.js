@@ -204,7 +204,6 @@
       pc = new RTCPeerConnection(configuration);
 
         pc.onicegatheringstatechange = function() {
-          console.warn(pc.iceGatheringState);
           switch(pc.iceGatheringState) {
             case "new":
             case "complete":
@@ -354,8 +353,6 @@
         if (details.id) {
             selfInfo.id = details.id;
             selfInfo.friendlyName = details.friendlyName;
-
-            document.title = "ORTC " + details.friendlyName;
         }
 
     }
@@ -486,7 +483,7 @@ function getMedia() {
   ).catch( 
       gotMediaError
   );
-
+  
 }
 
 
@@ -510,7 +507,6 @@ function gotMediaSDP(stream) {
 
   videoPreview = document.getElementById("previewVideo");
   videoPreview.srcObject = localStream;
-
 
 
   // send ice candidates to the other peer
@@ -1169,22 +1165,26 @@ function localDescCreated(desc) {
         //fixes DOMException: Error processing ICE candidate
         //by only setting candidates when remoteDescription is not set
         if(pc || pc.remoteDescription.type){
-        console.log("\n\n Remote SDP candidate:\n"
-            +JSON.stringify(message.candidate)+"\n\n\n");
 
         if(window.navigator.userAgent.indexOf("Edge") > -1){
             if(message.candidate == "endOfCandidates"){
               console.log("End of candidates - Edge");
               pc.addIceCandidate();
             }
-            else
+            else{
+                console.log("\n\n Remote SDP candidate:\n"
+                    +JSON.stringify(message.candidate)+"\n\n\n");
                 pc.addIceCandidate(new RTCIceCandidate(message.candidate));
+              }
         }
         else{            
             if(message.candidate == "endOfCandidates")
                 console.log("End of candidates");
-            else
-                pc.addIceCandidate(new RTCIceCandidate(message.candidate));
+            else{
+              console.log("\n\n Remote SDP candidate:\n"
+                  +JSON.stringify(message.candidate)+"\n\n\n");
+              pc.addIceCandidate(new RTCIceCandidate(message.candidate));
+            }
         }
         }
       }

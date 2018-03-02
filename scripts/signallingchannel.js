@@ -304,13 +304,21 @@
   // dispatch received messages
     function createPostUrl(localPeer, remotePeer) {
 
-      var postRequest = peerConnectionServer + "/message?peer_id=" + localPeer + "&to=" + remotePeer;// + "HTTP/1.0\r\n"
-
+      let message = "/message?peer_id=" + localPeer + "&to=" + remotePeer;
+      //live only
+      message = encodeURIComponent(message);
+      var postRequest = peerConnectionServer + message;// + "HTTP/1.0\r\n"
+      
       return postRequest;
     }
 
     function onMessageReceived(header, response) {
+
+      // console.warn("OnMessageResceived type: " + typeof response);
+      // console.warn(JSON.stringify(response));
+
       console.log(response);
+      // console.warn("Header: " + header);
 
       if (response != "") {
         if (peer_id == header) {
@@ -346,16 +354,16 @@
 
       var aClient = new HttpClient();
       var response = 0;
-
-      console.log(info);
+      var url;
 
       info = JSON.parse(info);
-      peerConnectionServer = "http://" + info.address + ":" + info.port;
+      console.log("Info: " + info);
 
+      
       var name;  
       var randomName;
       if(!localStorage['name']){
-        randomName = "Peer: " + Math.floor((Math.random() * 100000) + 1);
+        randomName = "Peer:" + Math.floor((Math.random() * 100000) + 1);
         document.getElementById('name').innerHTML = randomName;
       } else{
         randomName = localStorage['name'] || 'defaultValue';
@@ -368,9 +376,22 @@
       else
           name = randomName;
 
+
+
+      //live
+
+      url = "http://" + info.address + ":" + info.port;
+      peerConnectionServer= "https://www.webrtcpeer.com/signaling.php?url="+url;
+      console.warn(peerConnectionServer);
+
+
+      //local
+      // peerConnectionServer = "http://" + info.address + ":" + info.port;
+      // console.warn(peerConnectionServer);
+
       aClient.get(peerConnectionServer + signInMethod + name, function (header, response) {
         // do something with response
-        console.log(response);
+        console.log("start responce: "+response);
 
         var contacts = response.split("\n");
 
@@ -436,8 +457,13 @@
     // handle websocket messages
     function handleReceivedPeerMsg(e) {
 
+      // console.warn("type of handleReceivedPeerMsg: " + typeof e);
+
+      // console.warn("handleReceivedPeerMsg: " + e);
       e = JSON.parse(e);
-      console.log(e);
+      // console.log(e);
+      // console.warn("handleReceivedPeerMsg json parsed: " + e);
+
 
         if (e.kind === 'connect') {
             console.log('RECV: connect');

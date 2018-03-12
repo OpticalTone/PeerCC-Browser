@@ -204,20 +204,14 @@
       pc = new RTCPeerConnection(configuration);
 
         pc.onicegatheringstatechange = function() {
-          switch(pc.iceGatheringState) {
-            case "new":
-            case "complete":
+
+            if(pc.iceGatheringState === 'complete'){
               signalMessage(JSON.stringify({
-                "candidate": 'endOfCandidates'
-              }));
-              console.log("Ice gathering completed.");
-              break;
-            case "gathering":
-              break;
-          }
+                "sdp": pc.localDescription
+              }))
+            }
         }
 
-          
         //display remote track in the video element
         pc.ontrack = function(event){
         videoRenderer = document.getElementById("rtcRenderer");
@@ -273,6 +267,8 @@
         }
 
         peerInfo = {};
+
+        pc = null;
 
         isBusy = false;
         iceGathr = null;
@@ -339,7 +335,6 @@
         if (!softClose) {
             if(pc){
                 pc.close();
-                pc = null;
             }
             selfInfo = {};
             window.location.reload();
@@ -461,7 +456,7 @@
     //Used by both ORTC and WebRTC
     function gotMediaError(e) {
         showMessage(e, true);
-        addToLog("Error - gotMediaError: " + e);
+        console.log("Error - gotMediaError: " + e);
         signalMessage(JSON.stringify({ "error": "Media error: " + e 
             + "\n Please hang up and retry." }));
     }
@@ -509,42 +504,40 @@ function gotMediaSDP(stream) {
   videoPreview.srcObject = localStream;
 
 
-  // send ice candidates to the other peer
-  pc.onicecandidate = function (evt) {
-    signalMessage(JSON.stringify({
-      "candidate": evt.candidate
-    }));
-  };
 
 
   if (pc.remoteDescription && pc.remoteDescription.type == "offer")
-    pc.createAnswer(localDescCreated, logError);
+    pc.createAnswer({iceRestart: true}).then(localDescCreated, logError);
   else
-    pc.createOffer().then(localDescCreated, logError);
+    pc.createOffer({iceRestart: true}).then(localDescCreated, logError);
+    // .then(
+    //     pc.addEventListener('icecandidate', e => {
+    //         signalMessage(JSON.stringify({
+    //           "candidate": e.candidate
+    //         }));
+    //     });
+    // );
 
 }
 
-
-function gotMediaError(e) {
-    showMessage(e, true);
-    console.log("Error - gotMediaError: " + e);
-    signalMessage(JSON.stringify({ "error": "Media error: " + e 
-      + "\n Please hang up and retry." }));
-}
 
 //function called upon successful creation of offer or answer
 function localDescCreated(desc) {
 
   pc.setLocalDescription( 
-    new RTCSessionDescription(desc),
-    () => signalMessage(JSON.stringify({
-      "sdp": pc.localDescription
-    })),
-    logError
-  );
+    new RTCSessionDescription(desc)
+  ).catch(e => logError(e));
+    // // send ice candidates to the other peer
+    // pc.onicecandidate = function (evt) {
+    //   signalMessage(JSON.stringify({
+    //     "candidate": evt.candidate
+    //   }));
+    // };
+        pc.addEventListener('icecandidate', e => {
+          return pc.localDescription;
+        });
 
 }
-
 
 /*=====  End of Webrtc part  ======*/
 
@@ -557,10 +550,8 @@ function localDescCreated(desc) {
 
         updateCallStatus();
 
-        var iceOptions = { "gatherPolicy": "all", "iceServers": [{ "urls": "turn:turn-testdrive.cloudapp.net:3478?transport=udp", "username": "redmond", "credential": "redmond123" }] };
-
-        // the following will work for testing within the same network (i.e. no relay)
-        //var iceOptions = { "gatherPolicy": "all", "iceServers": [] };
+        var iceOptions = { "gatherPolicy": "all", 
+        "iceServers": [{ "urls": "turn:turn-testdrive.cloudapp.net:3478?transport=udp", "username": "redmond", "credential": "redmond123" }] };
 
         iceGathr = new RTCIceGatherer(iceOptions);
         iceTr = new RTCIceTransport(); 
@@ -583,7 +574,7 @@ function localDescCreated(desc) {
             if(Object.keys(evt.candidate).length == 0){
                 localCandidatesCreated = true;
 
-                addToLog("End of local ICE candidates");
+                console.log("End of local ICE candidates");
 
                 signalMessage(JSON.stringify({
                     params: {
@@ -599,7 +590,7 @@ function localDescCreated(desc) {
                 }
             }
             else {
-                addToLog("Local ICE candidate: " + evt.candidate.ip + ":" + evt.candidate.port);
+                console.log("Local ICE candidate: " + evt.candidate.ip + ":" + evt.candidate.port);
             }
         };
 
@@ -611,7 +602,7 @@ function localDescCreated(desc) {
             if(Object.keys(evt.candidate).length == 0){
                 localCandidatesCreated_2 = true;
 
-                addToLog("End of local ICE candidates_2");
+                console.log("End of local ICE candidates_2");
 
                 signalMessage(JSON.stringify({
                     params: {
@@ -627,7 +618,7 @@ function localDescCreated(desc) {
                 }
             }
             else {
-                addToLog("Local ICE candidate_2: " + evt.candidate.ip + ":" + evt.candidate.port);
+                console.log("Local ICE candidate_2: " + evt.candidate.ip + ":" + evt.candidate.port);
             }
         };
 
@@ -649,11 +640,11 @@ function localDescCreated(desc) {
 
         // ice state has changed
         iceTr.onicestatechange = function (evt) {
-            addToLog("ICE state changed to |" + iceTr.state + "|");
+            console.log("ICE state changed to |" + iceTr.state + "|");
             document.body.style.cursor = "default";
 
             if (iceTr.state === "connected") { 
-                addToLog("ICE transport has been established");
+                console.log("ICE transport has been established");
                 showMessage("ICE: Connection with peer established.");
             }
 
@@ -666,11 +657,11 @@ function localDescCreated(desc) {
         };
 
         if(!allowBundle) iceTr_2.onicestatechange = function (evt) {
-            addToLog("ICE_2 state changed to |" + iceTr_2.state + "|");
+            console.log("ICE_2 state changed to |" + iceTr_2.state + "|");
             document.body.style.cursor = "default";
 
             if (iceTr_2.state === "connected") { 
-                addToLog("ICE_2 transport has been established");
+                console.log("ICE_2 transport has been established");
                 showMessage("ICE: Connection with peer established.");
             }
 
@@ -683,11 +674,11 @@ function localDescCreated(desc) {
         };
 
         iceTr.oncandidatepairchange = function (evt) {
-            addToLog("ICE candidate pair changed to: " + JSON.stringify(evt.pair));
+            console.log("ICE candidate pair changed to: " + JSON.stringify(evt.pair));
         };
 
         if(!allowBundle) iceTr_2.oncandidatepairchange = function (evt) {
-            addToLog("ICE candidate_2 pair changed to: " + JSON.stringify(evt.pair));
+            console.log("ICE candidate_2 pair changed to: " + JSON.stringify(evt.pair));
         };
 
         iceGathr.onerror = function (evt) {
@@ -701,18 +692,18 @@ function localDescCreated(desc) {
 
         // dtls state has changed
         dtlsTr.ondtlsstatechange = function (evt) {
-            addToLog("DTLS state changed to |" + dtlsTr.state + "|");
+            console.log("DTLS state changed to |" + dtlsTr.state + "|");
             document.body.style.cursor = "default";
 
             if (dtlsTr.state === "connected") {  
-                addToLog("DTLS transport has been established");
+                console.log("DTLS transport has been established");
                 showMessage("Connection with peer established.");
             }
 
             if (dtlsTr.state === "disconnected" ||
                 dtlsTr.state === "closed") { 
 
-                addToLog("DTLS transport has been lost");
+                console.log("DTLS transport has been lost");
                 showMessage("Connection with peer lost. Please disconnect and try again.", true);
 
                 dtlsTr = null;
@@ -720,18 +711,18 @@ function localDescCreated(desc) {
         };
 
         if(!allowBundle) dtlsTr_2.ondtlsstatechange = function (evt) {
-            addToLog("DTLS_2 state changed to |" + dtlsTr_2.state + "|");
+            console.log("DTLS_2 state changed to |" + dtlsTr_2.state + "|");
             document.body.style.cursor = "default";
 
             if (dtlsTr_2.state === "connected") {  
-                addToLog("DTLS_2 transport has been established");
+                console.log("DTLS_2 transport has been established");
                 showMessage("Connection with peer established.");
             }
 
             if (dtlsTr_2.state === "disconnected" ||
                 dtlsTr_2.state === "closed") { 
 
-                addToLog("DTLS_2 transport has been lost");
+                console.log("DTLS_2 transport has been lost");
                 showMessage("Connection with peer lost. Please disconnect and try again.", true);
 
                 dtlsTr = null;
@@ -1021,15 +1012,11 @@ function localDescCreated(desc) {
             alert(msg);
         }
 
-        addToLog(msg);
-    }
-
-    function addToLog(msg) {
         console.log(msg);
     }
 
     function logError(error) {
-      console.log(error.name + ': ' + error.message);
+      console.warn(error.name + ': ' + error.message);
     }
 
 
@@ -1043,7 +1030,7 @@ function localDescCreated(desc) {
 
         var message = JSON.parse(evt.data);
 
-        addToLog(JSON.stringify(message));
+        console.log(JSON.stringify(message));
 
         if (message.contacts) {
           var values = message.contacts.split("\n");
@@ -1077,11 +1064,11 @@ function localDescCreated(desc) {
         }
 
         if (message.peerMessage) {
-          addToLog(JSON.stringify(message.peerMessage));
+          console.log(JSON.stringify(message.peerMessage));
         }
 
         if (message.registerdone) {
-            addToLog(JSON.stringify(message.registerdone));
+            console.log(JSON.stringify(message.registerdone));
             updateSelfInformation(message.registerdone);
             updateServerStatus();
         }
@@ -1133,7 +1120,12 @@ function localDescCreated(desc) {
         }
 
         if (message.disconnect && isBusy) {
+          if(!pc.localDescription){
             showMessage("Peer terminated connection. Please disconnect and try again.");
+          }
+          else{
+            showMessage("Peer terminated connection.");
+          }
             closeConnection(true);
         }
 
@@ -1166,31 +1158,15 @@ function localDescCreated(desc) {
         //by only setting candidates when remoteDescription is not set
         if(pc || pc.remoteDescription.type){
 
-        if(window.navigator.userAgent.indexOf("Edge") > -1){
-            if(message.candidate == "endOfCandidates"){
-              console.log("End of candidates - Edge");
-              pc.addIceCandidate();
-            }
-            else{
-                console.log("\n\n Remote SDP candidate:\n"
-                    +JSON.stringify(message.candidate)+"\n\n\n");
-                pc.addIceCandidate(new RTCIceCandidate(message.candidate));
-              }
-        }
-        else{            
-            if(message.candidate == "endOfCandidates")
-                console.log("End of candidates");
-            else{
-              console.log("\n\n Remote SDP candidate:\n"
-                  +JSON.stringify(message.candidate)+"\n\n\n");
-              pc.addIceCandidate(new RTCIceCandidate(message.candidate));
-            }
-        }
+          console.log("\n\n Remote SDP candidate:\n"
+              +JSON.stringify(message.candidate)+"\n\n\n");
+          pc.addIceCandidate(new RTCIceCandidate(message.candidate));
+            
         }
       }
 
       if(message.sdp){
-
+        
         //set remote description after getting offer or answer from the other peer
         pc.setRemoteDescription(message.sdp, function () {
 
@@ -1204,7 +1180,7 @@ function localDescCreated(desc) {
         if (iceTr && dtlsTr) {
             if (message.candidate) {
 
-                addToLog("Remote ICE candidate: " + message.candidate.ip + ":" 
+                console.log("Remote ICE candidate: " + message.candidate.ip + ":" 
                     + message.candidate.port);
 
                 if(Object.keys(message.candidate).length > 0) {
@@ -1303,7 +1279,7 @@ function localDescCreated(desc) {
 
         if (iceTr_2 && dtlsTr_2) {
             if (message.candidate_2) {
-                addToLog("Remote ICE candidate_2: " + message.candidate_2.ip 
+                console.log("Remote ICE candidate_2: " + message.candidate_2.ip 
                     + ":" + message.candidate_2.port);
 
                 if(Object.keys(message.candidate_2).length > 0) {

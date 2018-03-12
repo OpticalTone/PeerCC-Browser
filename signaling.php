@@ -7,7 +7,7 @@ if($_GET['url']){
 $url = urldecode($_GET['url']);
 
 	if(in_array(parse_url($url, PHP_URL_HOST), $allowURL) === true){
-
+		if(substr($url, strrpos($url, "/") + 1) != null){
 
 		$ch = curl_init();
 
@@ -34,12 +34,15 @@ $url = urldecode($_GET['url']);
 		$header_text = preg_split( '/[\r\n]+/', $headers );
 
 		foreach ( $header_text as $header ) {
+    		if ( preg_match( 
+    			'/^(?:content-type|pragma|connection|access-control-expose-headers|access-control-allow-origin|server|access-control-allow-headers):/i', $header ) ) {
 			  header( $header );
+			}
 		}
 		
 		print $result;
 		
-
+		}
 	}
 
 }

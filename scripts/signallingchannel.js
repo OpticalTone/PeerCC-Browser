@@ -342,8 +342,13 @@
       if (isConnected) {
         pollHttp = new HttpClientForPolling();
         var response = 0;
+        let wait;
 
-        pollHttp.getLongPolling(peerConnectionServer + waitMethod + peer_id, function (header, response) {
+        wait =  waitMethod + peer_id;
+        //live only
+        wait = encodeURIComponent(wait);
+        
+        pollHttp.getLongPolling(peerConnectionServer + wait, function (header, response) {
           onMessageReceived(header, response);
         }, sendLongPollingRequest);
       }

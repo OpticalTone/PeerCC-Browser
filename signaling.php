@@ -44,6 +44,8 @@ $url = urldecode($_GET['url']);
 		
 		}
 	}
+	else
+		print("Wrong server!");
 
 }
 

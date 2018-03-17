@@ -33,14 +33,18 @@ $url = urldecode($_GET['url']);
 
 		$header_text = preg_split( '/[\r\n]+/', $headers );
 
+		$header_sent = false;
+
 		foreach ( $header_text as $header ) {
-    		if ( preg_match( 
-    			'/^(?:content-type|pragma|connection|access-control-expose-headers|access-control-allow-origin|server|access-control-allow-headers):/i', $header ) ) {
+    		// if ( preg_match( 
+    		// 	'/^(?:content-type|pragma|connection|access-control-expose-headers|access-control-allow-origin|server|access-control-allow-headers):/i', $header ) ) {
 			  header( $header );
-			}
+			//   $header_sent = true;
+			// }
 		}
 		
-		print $result;
+		// if($header_sent)
+			print $result;
 		
 		}
 	}

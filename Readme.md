@@ -1,6 +1,7 @@
 # PeerCC-Browser
 
 Sample that uses ORTC and WebRTC to make a audio/video call between two peers
+Live sample: https://www.webrtcpeer.com/
 
 ## Getting Started
 
@@ -24,6 +25,16 @@ Latest Version of browsers:
 
 1. Open the project as Web Site in Visual Studio (File->Open->Web Site...)
 2. Select the project folder (PeerCC-Browser) and click Open
-3. Select the browser you wish to use and run the project
-4. Use browser console to debug
+3. If you want to run localy you must comment out the lines underneath "live only" comments (lines 309, 310, 349, 388, 389) and uncomment "local only" (393) in scripts/signallingchannel.js
+4. Select the browser you wish to use and run the project
+5. Use browser console to debug
+
+
+### How to use
+
+1. (Optional) Chose your name
+2. (Optional) Uncheck the trickle ice checkbox if you want to send candidates trough sdp only (Only works with WebRtc)
+3. Connect to the server using the connect button.
+4. Select the peer that you wish to make a video call with and click the call button to initiate the connection.
+
 

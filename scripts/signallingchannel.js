@@ -383,16 +383,14 @@
 
 
 
-      //live
-
+     
+      //live only
       url = "http://" + info.address + ":" + info.port;
       peerConnectionServer= "https://www.webrtcpeer.com/signaling.php?url="+url;
-      console.warn(peerConnectionServer);
 
 
-      //local
+      //local only
       // peerConnectionServer = "http://" + info.address + ":" + info.port;
-      // console.warn(peerConnectionServer);
 
       aClient.get(peerConnectionServer + signInMethod + name, function (header, response) {
         // do something with response

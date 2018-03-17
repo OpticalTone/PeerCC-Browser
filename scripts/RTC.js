@@ -66,6 +66,11 @@
     var selectedContactName = null;
     var selectedContactId = null;
 
+    //set to false if you want to send candidates trough SDP only
+    var trickleIce = true;
+    var trickleCheckbox;
+    var earlyCandidates = [];
+
     var util = {};
 
     var offerOptions = {
@@ -107,6 +112,7 @@
         document.getElementById("call_btn").value = "Call";
         document.getElementById("call_btn").disabled;
         document.getElementById("changeName").style.display = "initial";
+        trickleCheckbox = document.getElementById("toggleTrickleIce");
 
         initialize();
     };
@@ -203,9 +209,15 @@
     function start() {
       pc = new RTCPeerConnection(configuration);
 
+
+      if(trickleCheckbox.checked)
+        trickleIce = true;
+      else
+        trickleIce = false;
+
         pc.onicegatheringstatechange = function() {
 
-            if(pc.iceGatheringState === 'complete'){
+            if(pc.iceGatheringState === 'complete' && !trickleIce){
               signalMessage(JSON.stringify({
                 "sdp": pc.localDescription
               }))
@@ -510,13 +522,6 @@ function gotMediaSDP(stream) {
     pc.createAnswer({iceRestart: true}).then(localDescCreated, logError);
   else
     pc.createOffer({iceRestart: true}).then(localDescCreated, logError);
-    // .then(
-    //     pc.addEventListener('icecandidate', e => {
-    //         signalMessage(JSON.stringify({
-    //           "candidate": e.candidate
-    //         }));
-    //     });
-    // );
 
 }
 
@@ -525,17 +530,37 @@ function gotMediaSDP(stream) {
 function localDescCreated(desc) {
 
   pc.setLocalDescription( 
-    new RTCSessionDescription(desc)
-  ).catch(e => logError(e));
-    // // send ice candidates to the other peer
-    // pc.onicecandidate = function (evt) {
-    //   signalMessage(JSON.stringify({
-    //     "candidate": evt.candidate
-    //   }));
-    // };
-        pc.addEventListener('icecandidate', e => {
-          return pc.localDescription;
-        });
+    new RTCSessionDescription(desc),
+    function(){
+      if(trickleIce)
+      signalMessage(JSON.stringify({
+            "sdp": pc.localDescription
+          }))
+    },logError
+  );
+  
+  // send ice candidates to the other peer
+  if(trickleIce){
+    // if(pc.remoteDescription.type == "offer")
+    //   pc.onicecandidate = function (evt) {
+    //       setTimeout(() => {
+    //         signalMessage(JSON.stringify({
+    //           "candidate": evt.candidate
+    //         }));
+    //       }, 2500);
+    //   };
+    //  else
+      pc.onicecandidate = function (evt) {
+          signalMessage(JSON.stringify({
+            "candidate": evt.candidate
+          }));
+      };
+  }
+  else
+    pc.onicecandidate = function (evt) {
+      return pc.localDescription;
+    };
+
 
 }
 
@@ -1156,13 +1181,19 @@ function localDescCreated(desc) {
       if(message.candidate && (!iceTr || !dtlsTr)){
         //fixes DOMException: Error processing ICE candidate
         //by only setting candidates when remoteDescription is not set
-        if(pc || pc.remoteDescription.type){
-
-          console.log("\n\n Remote SDP candidate:\n"
-              +JSON.stringify(message.candidate)+"\n\n\n");
-          pc.addIceCandidate(new RTCIceCandidate(message.candidate));
-            
+        if(pc.remoteDescription){
+            console.log("Remote SDP candidate:\n"+JSON.stringify(message.candidate));
+            pc.addIceCandidate(new RTCIceCandidate(message.candidate));
+         if(window.navigator.userAgent.indexOf("Edge") > -1){
+            earlyCandidates.push(message.candidate);
+          }
+           
         }
+          else{
+            console.log("Ice candidate postponed!");
+            earlyCandidates.push(message.candidate);
+          }
+           
       }
 
       if(message.sdp){
@@ -1170,10 +1201,21 @@ function localDescCreated(desc) {
         //set remote description after getting offer or answer from the other peer
         pc.setRemoteDescription(message.sdp, function () {
 
+          if(earlyCandidates.length>0){
+            earlyCandidates.forEach( function(candidate) {
+              pc.addIceCandidate(new RTCIceCandidate(candidate));
+              console.log("Postponed ice candidate added.");
+            });
+          }
+          else{
+            console.log("No early ice candidates to add.")
+          }
+
           // if we received an offer, we need set up the stream to send the answer
           if (pc.remoteDescription.type == "offer"){
                 getMedia();
               }
+
             }, logError);
       }
 

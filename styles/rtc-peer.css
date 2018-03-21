@@ -110,3 +110,9 @@ li a {
 #changeName>*{
   margin-bottom: 5px;
 }
+#toggleTrickleIce{
+  position: static;
+}
+label[for="toggleTrickleIce"] {
+  font-size: 22px;
+}

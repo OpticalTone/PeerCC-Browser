@@ -1005,6 +1005,43 @@
 
 
   function showMessage(msg, alrt) {
+      var stat = document.getElementById("footer-status");
+
+      if (stat) {
+          stat.innerHTML = msg;
+      }
+
+      if (alrt) {
+          alert(msg);
+      }
+
+      console.log(msg);
+  }
+
+  function logError(error) {
+    console.warn(error.name + ': ' + error.message);
+  }
+
+
+// Function that handles messages received through signaling channel(server)
+  function handleMessages(evt) {
+
+      if (!pc && checkIfWebRTC)
+          startWebRTC();
+
+      var message = JSON.parse(evt.data);
+
+      console.log(JSON.stringify(message));
+
+      if (message.contacts) {
+        var values = message.contacts.split("\n");
+        for (var i = 0; i < values.length; i++) {
+          if (values[i] != "") {
+            var peer_information = values[0].split(",");
+
+            if (peer_information[2] == "0") {
+              contacts.delete(peer_information[0]);
+
 
       var stat = document.getElementById("footer-status");
 
@@ -1022,6 +1059,7 @@
   function logError(error) {
     console.warn(error.name + ': ' + error.message);
   }
+
 
 
 // Function that handles messages received through signaling channel(server)

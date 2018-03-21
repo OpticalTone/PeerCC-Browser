@@ -16,6 +16,8 @@
 (function (global) {
     'use strict';
 
+    var live = true;
+
     var self = null;
     var clientSocket = null;
     var peer_id = null;
@@ -305,20 +307,20 @@
     function createPostUrl(localPeer, remotePeer) {
 
       let message = "/message?peer_id=" + localPeer + "&to=" + remotePeer;
+
       //live only
-      message = encodeURIComponent(message);
-      var postRequest = peerConnectionServer + message;// + "HTTP/1.0\r\n"
+      if(live)
+        message = encodeURIComponent(message);
+
+
+      var postRequest = peerConnectionServer + message;
       
       return postRequest;
     }
 
     function onMessageReceived(header, response) {
 
-      // console.warn("OnMessageResceived type: " + typeof response);
-      // console.warn(JSON.stringify(response));
-
       console.log(response);
-      // console.warn("Header: " + header);
 
       if (response != "") {
         if (peer_id == header) {
@@ -345,9 +347,12 @@
         let wait;
 
         wait =  waitMethod + peer_id;
+
         //live only
-        wait = encodeURIComponent(wait);
+        if(live)
+          wait = encodeURIComponent(wait);
         
+
         pollHttp.getLongPolling(peerConnectionServer + wait, function (header, response) {
           onMessageReceived(header, response);
         }, sendLongPollingRequest);
@@ -385,12 +390,13 @@
 
      
       //live only
-      url = "http://" + info.address + ":" + info.port;
-      peerConnectionServer= "https://www.webrtcpeer.com/signaling.php?url="+url;
+      if(live){
+        url = "http://" + info.address + ":" + info.port;
+        peerConnectionServer= "https://www.webrtcpeer.com/signaling.php?url="+url;
+      }
+      else
+        peerConnectionServer = "http://" + info.address + ":" + info.port;
 
-
-      //local only
-      // peerConnectionServer = "http://" + info.address + ":" + info.port;
 
       aClient.get(peerConnectionServer + signInMethod + name, function (header, response) {
         // do something with response
@@ -460,13 +466,7 @@
     // handle websocket messages
     function handleReceivedPeerMsg(e) {
 
-      // console.warn("type of handleReceivedPeerMsg: " + typeof e);
-
-      // console.warn("handleReceivedPeerMsg: " + e);
       e = JSON.parse(e);
-      // console.log(e);
-      // console.warn("handleReceivedPeerMsg json parsed: " + e);
-
 
         if (e.kind === 'connect') {
             console.log('RECV: connect');

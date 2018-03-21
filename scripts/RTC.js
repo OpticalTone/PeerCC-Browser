@@ -13,356 +13,332 @@
 
 
 (function (global) {
-    "use strict";
+  "use strict";
 
-    var pc;
-    var state;
-    var sigCh = null;
-    var iceGathr = null;
-    var iceTr = null;
-    var dtlsTr = null;
-    var isConnected = false;
-    var isBusy = false;
-    var audioSender = null;
-    var videoSender = null;
-    var audioReceiver = null;
-    var videoReceiver = null;
-    var sendAudioCaps = null;
-    var sendVideoCaps = null;
-    var receiveVideoCaps = null;
-    var receiveAudioCaps = null;
-    var selfInfo = {};
-    var peerInfo = {};
-    var remoteCandidates = [];
-    var localCandidatesCreated = false;
-    var remoteIceParams = null;
-    var remoteDtlsParams = null;
-    var videoRenderer = null;
-    var localStream = null;
-    var videoPreview = null;
-    var renderStream = null; 
-    var previewStream = null;
-    var trackCount = 0;
-    var remote_audioRecvParams = null;
-    var remote_videoRecvParams = null;
-    var remote_audioSendParams = null;
-    var remote_videoSendParams = null;
-    var local_video_MST = null;
-    var local_audio_MST = null;
+  var pc;
+  var state;
+  var sigCh = null;
+  var iceGathr = null;
+  var iceTr = null;
+  var dtlsTr = null;
+  var isConnected = false;
+  var isBusy = false;
+  var audioSender = null;
+  var videoSender = null;
+  var audioReceiver = null;
+  var videoReceiver = null;
+  var sendAudioCaps = null;
+  var sendVideoCaps = null;
+  var receiveVideoCaps = null;
+  var receiveAudioCaps = null;
+  var selfInfo = {};
+  var peerInfo = {};
+  var remoteCandidates = [];
+  var localCandidatesCreated = false;
+  var remoteIceParams = null;
+  var remoteDtlsParams = null;
+  var videoRenderer = null;
+  var localStream = null;
+  var videoPreview = null;
+  var renderStream = null; 
+  var previewStream = null;
+  var trackCount = 0;
+  var remote_audioRecvParams = null;
+  var remote_videoRecvParams = null;
+  var remote_audioSendParams = null;
+  var remote_videoSendParams = null;
+  var local_video_MST = null;
+  var local_audio_MST = null;
 
-    var allowBundle = true;
-    var iceGathr_2 = null;
-    var iceTr_2 = null;
-    var dtlsTr_2 = null;
-    var remoteCandidates_2 = [];
-    var localCandidatesCreated_2 = false;
-    var remoteIceParams_2 = null;
-    var remoteDtlsParams_2 = null;
+  var allowBundle = true;
+  var iceGathr_2 = null;
+  var iceTr_2 = null;
+  var dtlsTr_2 = null;
+  var remoteCandidates_2 = [];
+  var localCandidatesCreated_2 = false;
+  var remoteIceParams_2 = null;
+  var remoteDtlsParams_2 = null;
 
-    var allowPreview = true;
+  var allowPreview = true;
 
-    var contacts = null;
+  var contacts = null;
 
-    var selectedContactName = null;
-    var selectedContactId = null;
+  var selectedContactName = null;
+  var selectedContactId = null;
 
-    //set to false if you want to send candidates trough SDP only
-    var trickleIce = true;
-    var trickleCheckbox;
-    var earlyCandidates = [];
+  var trickleIce = true;
+  var trickleCheckbox;
+  var earlyCandidates = [];
 
-    var util = {};
+  var util = {};
 
-    var offerOptions = {
-      offerToReceiveAudio: 1,
-      offerToReceiveVideo: 1
-    };
+  var offerOptions = {
+    offerToReceiveAudio: 1,
+    offerToReceiveVideo: 1
+  };
 
-    var configuration;
+  var configuration;
 
-    if(window.navigator.userAgent.indexOf("Edge") > -1){
-      console.log("Edge Browser");
-      configuration = { "gatherPolicy": "all", 
-      "iceServers": [
-        { 
-          "urls": 
-            "turn:turn-testdrive.cloudapp.net:3478?transport=udp", 
-            "username": "redmond", 
-            "credential": "redmond123" 
-        }
-      ] };
-    }else{
-      console.log("Not Edge Browser");
-      configuration = { "gatherPolicy": "all", 
-      "iceServers": [
-        {
-          "urls": "stun: stun.l.google.com:19302"
-        },
-        { 
-          "urls": 
-            "turn:turn-testdrive.cloudapp.net:3478?transport=udp", 
-            "username": "redmond", 
-            "credential": "redmond123" 
-        }
-      ] };
+  var mediaRestraints = { 
+      "audio": true, 
+      "video": {
+          width: 640,
+          height: 480,
+          facingMode: "user" 
+      }
     }
-    window.onload = function () {
-        document.getElementById("connect_btn").value = "Connect";
-        document.getElementById("connect_btn").enabled;
-        document.getElementById("call_btn").value = "Call";
-        document.getElementById("call_btn").disabled;
-        document.getElementById("changeName").style.display = "initial";
-        trickleCheckbox = document.getElementById("toggleTrickleIce");
 
-        initialize();
-    };
+  //Edge currently does not support turn server
+  if(window.navigator.userAgent.indexOf("Edge") > -1){
+    configuration = { "gatherPolicy": "all", 
+    "iceServers": [
+      { 
+        "urls": 
+          "turn:turn-testdrive.cloudapp.net:3478?transport=udp", 
+          "username": "redmond", 
+          "credential": "redmond123" 
+      }
+    ] };
+  }else{
+    configuration = { "gatherPolicy": "all", 
+    "iceServers": [
+      {
+        "urls": "stun: stun.l.google.com:19302"
+      },
+      { 
+        "urls": 
+          "turn:turn-testdrive.cloudapp.net:3478?transport=udp", 
+          "username": "redmond", 
+          "credential": "redmond123" 
+      }
+    ] };
+  }
+  window.onload = function () {
+      document.getElementById("connect_btn").value = "Connect";
+      document.getElementById("connect_btn").enabled;
+      document.getElementById("call_btn").value = "Call";
+      document.getElementById("call_btn").disabled;
+      document.getElementById("changeName").style.display = "initial";
+      trickleCheckbox = document.getElementById("toggleTrickleIce");
+
+      initialize();
+  };
 
 
-    function initialize() {
-        try {
-          document.getElementById("connect_btn")
-          .addEventListener("click", onConnectButtonPressed);
+  function initialize() {
+      try {
+        document.getElementById("connect_btn")
+        .addEventListener("click", onConnectButtonPressed);
 
-          document.getElementById("call_btn")
-          .addEventListener("click", onCallButtonPressed);
+        document.getElementById("call_btn")
+        .addEventListener("click", onCallButtonPressed);
 
-            var ul = document.getElementById("contactList");
-            ul.onclick = function (event) {
-              var target = getEventTarget(event);
-              selectedContactName = target.innerHTML;
-              selectedContactId = contacts.get(selectedContactName);
-            };
+          var ul = document.getElementById("contactList");
+          ul.onclick = function (event) {
+            var target = getEventTarget(event);
+            selectedContactName = target.innerHTML;
+            selectedContactId = contacts.get(selectedContactName);
+          };
 
-            global.fName = window.location.pathname
-            .substring(window.location.pathname.indexOf("/", 0) + 1);
+          global.fName = window.location.pathname
+          .substring(window.location.pathname.indexOf("/", 0) + 1);
 
-            contacts = new Map();
-            sigCh = new global.SignallingChannel();
-            sigCh.onmessage = handleMessages;
+          contacts = new Map();
+          sigCh = new global.SignallingChannel();
+          sigCh.onmessage = handleMessages;
 
-            // remove saved name
-            // localStorage.removeItem("name");
-
-            if(localStorage['name']){
-              document.getElementById('name').innerHTML = localStorage['name'];
-            }
-        }
-        catch (e) {
-            showMessage(e.message || e, true);
-        }
-    }
+          if(localStorage['name']){
+            document.getElementById('name').innerHTML = localStorage['name'];
+          }
+      }
+      catch (e) {
+          showMessage(e.message || e, true);
+      }
+  }
 
 
 /*=========================================
 =            Connect to server            =
 =========================================*/
 
-    function onConnectButtonPressed() {
-      if (isConnected) {
-        disconnectFromServer();
+  function onConnectButtonPressed() {
+    if (isConnected) {
+      disconnectFromServer();
+    }
+    else {
+      connectToServer();
+    }
+  }
+
+  function connectToServer() {
+    if (sigCh) {
+      var elServerAddress = document.getElementById("peer-id");
+      var elServerPort = document.getElementById("peer-key");
+      var info = JSON.stringify({
+        address: elServerAddress.value,
+        port: elServerPort.value
+      });
+      document.body.style.cursor = "progress";
+
+      document.getElementById("changeName").style.display = "none";
+
+      sigCh.start(info);
+    }
+  }
+
+  function disconnectFromServer() {
+    if (sigCh) {
+      document.body.style.cursor = "progress";
+      sigCh.close();
+      document.getElementById("changeName").style.display = "initial";
+    }
+  }
+
+  function updateServerStatus(on) {
+    if (on) {
+      document.getElementById("connect_btn").value = "Connect";
+      isConnected = false;
+      document.body.style.cursor = "default";
+    }
+    else {
+      document.getElementById("connect_btn").value = "Disconnect";
+      isConnected = true;
+      document.body.style.cursor = "default";
+
+      document.getElementById("call_btn").disabled = false;
+      showMessage("Connected to Peer Connection Server");
+    }
+  }
+
+  function clearPeerDetails() {
+      var elPeerId = document.getElementById("peer-id");
+
+      if (elPeerId) {
+          elPeerId.value = "";
+          elPeerId.title = "";
       }
-      else {
-        connectToServer();
+
+      peerInfo = {};
+  }
+
+  function closeConnection(softClose) {
+      if (audioSender) {
+          audioSender.stop();
       }
-    }
 
-    function connectToServer() {
-      if (sigCh) {
-        var elServerAddress = document.getElementById("peer-id");
-        var elServerPort = document.getElementById("peer-key");
-        var info = JSON.stringify({
-          address: elServerAddress.value,
-          port: elServerPort.value
-        });
-        document.body.style.cursor = "progress";
-
-        document.getElementById("changeName").style.display = "none";
-
-        sigCh.start(info);
+      if (videoSender) {
+          videoSender.stop();
       }
-    }
 
-    function disconnectFromServer() {
-      if (sigCh) {
-        document.body.style.cursor = "progress";
-        sigCh.close();
-        document.getElementById("changeName").style.display = "initial";
+      if (audioReceiver) {
+          audioReceiver.stop();
       }
-    }
 
-    function updateServerStatus(on) {
-      if (on) {
-        document.getElementById("connect_btn").value = "Connect";
-        isConnected = false;
-        document.body.style.cursor = "default";
+      if (videoReceiver) {
+          videoReceiver.stop();
       }
-      else {
-        document.getElementById("connect_btn").value = "Disconnect";
-        isConnected = true;
-        document.body.style.cursor = "default";
 
-        document.getElementById("call_btn").disabled = false;
-        showMessage("Connected to Peer Connection Server");
+      if (iceTr) {
+          iceTr.stop();
       }
-    }
 
-    function start() {
-      pc = new RTCPeerConnection(configuration);
+      if (iceTr_2) {
+          iceTr_2.stop();
+      }
 
+      if (dtlsTr) {
+          dtlsTr.stop();
+      }
 
-      if(trickleCheckbox.checked)
-        trickleIce = true;
-      else
-        trickleIce = false;
+      if (dtlsTr_2) {
+          dtlsTr_2.stop();
+      }
 
-        pc.onicegatheringstatechange = function() {
+      peerInfo = {};
 
-            if(pc.iceGatheringState === 'complete' && !trickleIce){
-              signalMessage(JSON.stringify({
-                "sdp": pc.localDescription
-              }))
-            }
-        }
+      pc = null;
 
-        //display remote track in the video element
-        pc.ontrack = function(event){
-        videoRenderer = document.getElementById("rtcRenderer");
-        videoRenderer.srcObject = event.streams[0];
-        console.log("Remote track resceved");
-        document.body.style.cursor = "default";
-        }
-      updateServerStatus();
-    }
+      isBusy = false;
+      iceGathr = null;
+      iceGathr_2 = null;
+      audioSender = null;
+      videoSender = null;
+      audioReceiver = null;
+      videoReceiver = null;
+      sendAudioCaps = null;
+      sendVideoCaps = null;
+      receiveVideoCaps = null;
+      receiveAudioCaps = null;
+      selectedContactName = null;
+      selectedContactId = null;
 
-    function clearPeerDetails() {
-        var elPeerId = document.getElementById("peer-id");
+      remoteCandidates = [];
+      localCandidatesCreated = false;
+      remoteIceParams = null;
+      remoteDtlsParams = null;
+      remoteCandidates_2 = [];
+      localCandidatesCreated_2 = false;
+      remoteIceParams_2 = null;
+      remoteDtlsParams_2 = null;
 
-        if (elPeerId) {
-            elPeerId.value = "";
-            elPeerId.title = "";
-        }
+      remote_audioRecvParams = null;
+      remote_videoRecvParams = null;
+      remote_audioSendParams = null;
+      remote_videoSendParams = null;
 
-        peerInfo = {};
-    }
+      if(previewStream){
+          previewStream = null;
+      }
+      if(local_video_MST) {
+          local_video_MST.stop();
+          local_video_MST = null; 
+      }
+      if(local_audio_MST) {
+          local_audio_MST.stop();
+          local_audio_MST = null; 
+      }
+      trackCount = 0;
 
-    function closeConnection(softClose) {
-        if (audioSender) {
-            audioSender.stop();
-        }
+      // reset video tags and release capture devices 
+      if(videoRenderer){
+        videoRenderer.src = null;
+        videoRenderer.srcObject = null;
+        videoRenderer = null;
+      }
+      if(videoPreview) {
+        videoPreview.src = null;
+        videoPreview.srcObject = null;
+        videoPreview = null;
+      }
+      if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+      localStream = null; 
+      }
+      if (renderStream) {
+      renderStream.getTracks().forEach(track => track.stop());
+      renderStream = null; 
+      }
+  
 
-        if (videoSender) {
-            videoSender.stop();
-        }
+      if (!softClose) {
+          if(pc){
+              pc.close();
+          }
+          selfInfo = {};
+          window.location.reload();
+      }
 
-        if (audioReceiver) {
-            audioReceiver.stop();
-        }
+      updateCallStatus(true);
+  }
 
-        if (videoReceiver) {
-            videoReceiver.stop();
-        }
+  function updateSelfInformation(details) {
 
-        if (iceTr) {
-            iceTr.stop();
-        }
+      if (details.id) {
+          selfInfo.id = details.id;
+          selfInfo.friendlyName = details.friendlyName;
+      }
 
-        if (iceTr_2) {
-            iceTr_2.stop();
-        }
-
-        if (dtlsTr) {
-            dtlsTr.stop();
-        }
-
-        if (dtlsTr_2) {
-            dtlsTr_2.stop();
-        }
-
-        peerInfo = {};
-
-        pc = null;
-
-        isBusy = false;
-        iceGathr = null;
-        iceGathr_2 = null;
-        audioSender = null;
-        videoSender = null;
-        audioReceiver = null;
-        videoReceiver = null;
-        sendAudioCaps = null;
-        sendVideoCaps = null;
-        receiveVideoCaps = null;
-        receiveAudioCaps = null;
-        selectedContactName = null;
-        selectedContactId = null;
-
-        remoteCandidates = [];
-        localCandidatesCreated = false;
-        remoteIceParams = null;
-        remoteDtlsParams = null;
-        remoteCandidates_2 = [];
-        localCandidatesCreated_2 = false;
-        remoteIceParams_2 = null;
-        remoteDtlsParams_2 = null;
-
-        remote_audioRecvParams = null;
-        remote_videoRecvParams = null;
-        remote_audioSendParams = null;
-        remote_videoSendParams = null;
-
-        if(previewStream){
-            previewStream = null;
-        }
-        if(local_video_MST) {
-            local_video_MST.stop();
-            local_video_MST = null; 
-        }
-        if(local_audio_MST) {
-            local_audio_MST.stop();
-            local_audio_MST = null; 
-        }
-        trackCount = 0;
-
-        // reset video tags and release capture devices 
-        if(videoRenderer){
-          videoRenderer.src = null;
-          videoRenderer.srcObject = null;
-          videoRenderer = null;
-        }
-        if(videoPreview) {
-          videoPreview.src = null;
-          videoPreview.srcObject = null;
-          videoPreview = null;
-        }
-        if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-        localStream = null; 
-        }
-        if (renderStream) {
-        renderStream.getTracks().forEach(track => track.stop());
-        renderStream = null; 
-        }
-    
-
-        if (!softClose) {
-            if(pc){
-                pc.close();
-            }
-            selfInfo = {};
-            window.location.reload();
-        }
-
-        updateCallStatus(true);
-    }
-
-    function updateSelfInformation(details) {
-
-        if (details.id) {
-            selfInfo.id = details.id;
-            selfInfo.friendlyName = details.friendlyName;
-        }
-
-    }
+  }
 
 
 /*=====  End of Connect to server  ======*/
@@ -375,103 +351,103 @@
 =================================*/
 
 
-    function getEventTarget(e) {
-      e = e || window.event;
-      return e.target || e.srcElement;
-    }
+  function getEventTarget(e) {
+    e = e || window.event;
+    return e.target || e.srcElement;
+  }
 
-    function onCallButtonPressed() {
-       
+  function onCallButtonPressed() {
+     
+    if (isBusy) {
+      hangup();
+    }
+    else {
+      call();
+    }
+  }
+
+  function call() {
+
+    if (selectedContactId == null || selectedContactName == null) {
+      alert("Please select contact before making call.");
+    }
+    else {
+      peerInfo.id = selectedContactId
+      peerInfo.friendlyName = selectedContactName;
+      signalMessage(JSON.stringify({
+        connectrequest: "connectrequest",
+        peerId: peerInfo.id
+      }));
+    }
+  }
+
+  function hangup() {
+    if (isBusy) {
+      signalMessage(JSON.stringify({ disconnect: 'disconnect' }));
+    }
+    else {
+      alert("Not in call, cannot hangup");
+    }
+  }
+
+  function signalMessage(msg) {
+      if (sigCh) {
+          msg = JSON.parse(msg);
+          msg.selfInfo = selfInfo;
+          msg.peerInfo = peerInfo;
+          sigCh.send(JSON.stringify(msg));
+      }
+  }
+
+  function updateCallStatus(on) {
+      if (on) {
+          document.getElementById("call_btn").value = "Call";
+          isBusy = false;
+      }
+      else {
+          document.getElementById("call_btn").value = "End Call";
+          isBusy = true;
+          document.body.style.cursor = "progress";
+      }
+  }
+
+  function handleCallRequest(message) {
+      showMessage("Peer: " + message.connectrequest.peerInfo.id 
+          + " requested to connect.");
+
       if (isBusy) {
-        hangup();
+          peerInfo = message.connectrequest.peerInfo;
+
+          // reject
+          signalMessage(JSON.stringify({
+              "connectresponse": "reject"
+          }));
+
+          peerInfo = {};
+          showMessage("Rejected Peer: " + message.connectrequest.peerInfo.id 
+              + " connection request.");
       }
       else {
-        call();
+          // accept
+          peerInfo = message.connectrequest.peerInfo;
+
+          signalMessage(JSON.stringify({
+              "connectresponse": "accept"
+          }));
+
+          showMessage("Accepted Peer: " + message.connectrequest.peerInfo.id 
+              + " connection request.");
+
       }
-    }
+  }
 
-    function call() {
-
-      if (selectedContactId == null || selectedContactName == null) {
-        alert("Please select contact before making call.");
-      }
-      else {
-        peerInfo.id = selectedContactId
-        peerInfo.friendlyName = selectedContactName;
-        signalMessage(JSON.stringify({
-          connectrequest: "connectrequest",
-          peerId: peerInfo.id
-        }));
-      }
-    }
-
-    function hangup() {
-      if (isBusy) {
-        signalMessage(JSON.stringify({ disconnect: 'disconnect' }));
-      }
-      else {
-        alert("Not in call, cannot hangup");
-      }
-    }
-
-    function signalMessage(msg) {
-        if (sigCh) {
-            msg = JSON.parse(msg);
-            msg.selfInfo = selfInfo;
-            msg.peerInfo = peerInfo;
-            sigCh.send(JSON.stringify(msg));
-        }
-    }
-
-    function updateCallStatus(on) {
-        if (on) {
-            document.getElementById("call_btn").value = "Call";
-            isBusy = false;
-        }
-        else {
-            document.getElementById("call_btn").value = "End Call";
-            isBusy = true;
-            document.body.style.cursor = "progress";
-        }
-    }
-
-    function handleCallRequest(message) {
-        showMessage("Peer: " + message.connectrequest.peerInfo.id 
-            + " requested to connect.");
-
-        if (isBusy) {
-            peerInfo = message.connectrequest.peerInfo;
-
-            // reject
-            signalMessage(JSON.stringify({
-                "connectresponse": "reject"
-            }));
-
-            peerInfo = {};
-            showMessage("Rejected Peer: " + message.connectrequest.peerInfo.id 
-                + " connection request.");
-        }
-        else {
-            // accept
-            peerInfo = message.connectrequest.peerInfo;
-
-            signalMessage(JSON.stringify({
-                "connectresponse": "accept"
-            }));
-
-            showMessage("Accepted Peer: " + message.connectrequest.peerInfo.id 
-                + " connection request.");
-
-        }
-    }
-
-    //Used by both ORTC and WebRTC
-    function gotMediaError(e) {
-        showMessage(e, true);
-        console.log("Error - gotMediaError: " + e);
-        signalMessage(JSON.stringify({ "error": "Media error: " + e 
-            + "\n Please hang up and retry." }));
-    }
+  //Used by both ORTC and WebRTC
+  function gotMediaError(e) {
+      showMessage(e, true);
+      console.log("Error - gotMediaError: " + e);
+      signalMessage(JSON.stringify({ "error": "Media error: " + e 
+          + "\n Please hang up and retry." }));
+  }
 
 
 
@@ -479,90 +455,105 @@
 =            Webrtc part            =
 ===================================*/
 
-
-function getMedia() {
-  // Get a local stream
-  navigator.mediaDevices.getUserMedia({ 
-      "audio": true, 
-      "video": true
-  }).then( 
-      gotMediaSDP
-  ).catch( 
-      gotMediaError
-  );
-  
-}
+  function startWebRTC() {
+    pc = new RTCPeerConnection(configuration);
 
 
-function gotMediaSDP(stream) {
-  updateCallStatus();
+    if(trickleCheckbox.checked)
+      trickleIce = true;
+    else
+      trickleIce = false;
 
-  //add local stream to the video element.
-  localStream = stream;
+    pc.onicegatheringstatechange = function() {
 
-
-  //add local stream to the RTCPeerConnection
-  localStream.getTracks().forEach(
-    function(track) {
-    console.log('Using device: ' + track.label);
-      pc.addTrack(
-        track,
-        localStream
-      );
-    }
-  );
-
-  videoPreview = document.getElementById("previewVideo");
-  videoPreview.srcObject = localStream;
-
-
-
-
-  if (pc.remoteDescription && pc.remoteDescription.type == "offer")
-    pc.createAnswer({iceRestart: true}).then(localDescCreated, logError);
-  else
-    pc.createOffer({iceRestart: true}).then(localDescCreated, logError);
-
-}
-
-
-//function called upon successful creation of offer or answer
-function localDescCreated(desc) {
-
-  pc.setLocalDescription( 
-    new RTCSessionDescription(desc),
-    function(){
-      if(trickleIce)
-      signalMessage(JSON.stringify({
+        if(pc.iceGatheringState === 'complete' && !trickleIce){
+          signalMessage(JSON.stringify({
             "sdp": pc.localDescription
           }))
-    },logError
-  );
-  
-  // send ice candidates to the other peer
-  if(trickleIce){
-    // if(pc.remoteDescription.type == "offer")
-    //   pc.onicecandidate = function (evt) {
-    //       setTimeout(() => {
-    //         signalMessage(JSON.stringify({
-    //           "candidate": evt.candidate
-    //         }));
-    //       }, 2500);
-    //   };
-    //  else
-      pc.onicecandidate = function (evt) {
-          signalMessage(JSON.stringify({
-            "candidate": evt.candidate
-          }));
-      };
+        }
+    }
+
+    //display remote track in the video element
+    pc.ontrack = function(event){
+      videoRenderer = document.getElementById("rtcRenderer");
+      videoRenderer.srcObject = event.streams[0];
+      console.log("Remote track resceved");
+      document.body.style.cursor = "default";
+    }
+    updateServerStatus();
   }
-  else
-    pc.onicecandidate = function (evt) {
-      return pc.localDescription;
-    };
+
+  function getMedia() {
+    // Get a local stream
+    navigator.mediaDevices.getUserMedia(mediaRestraints).then( 
+        gotMediaSDP
+    ).catch( 
+        gotMediaError
+    );
+    
+  }
 
 
-}
+  function gotMediaSDP(stream) {
+    updateCallStatus();
+
+    //add local stream to the video element.
+    localStream = stream;
+
+
+    //add local stream to the RTCPeerConnection
+    localStream.getTracks().forEach(
+      function(track) {
+      console.log('Using device: ' + track.label);
+        pc.addTrack(
+          track,
+          localStream
+        );
+      }
+    );
+
+    videoPreview = document.getElementById("previewVideo");
+    videoPreview.srcObject = localStream;
+
+
+
+
+    if (pc.remoteDescription && pc.remoteDescription.type == "offer")
+      pc.createAnswer({iceRestart: true}).then(localDescCreated, logError);
+    else
+      pc.createOffer({iceRestart: true}).then(localDescCreated, logError);
+
+  }
+
+
+  //function called upon successful creation of offer or answer
+  function localDescCreated(desc) {
+
+    pc.setLocalDescription( 
+      new RTCSessionDescription(desc),
+      function(){
+        if(trickleIce)
+        signalMessage(JSON.stringify({
+              "sdp": pc.localDescription
+            }))
+      },logError
+    );
+    
+    // send ice candidates to the other peer
+    if(trickleIce){
+        pc.onicecandidate = function (evt) {
+            signalMessage(JSON.stringify({
+              "candidate": evt.candidate
+            }));
+        };
+    }
+    else
+      pc.onicecandidate = function (evt) {
+        return pc.localDescription;
+      };
+
+
+  }
 
 /*=====  End of Webrtc part  ======*/
 
@@ -571,451 +562,439 @@ function localDescCreated(desc) {
 =            ORTC part            =
 =================================*/
 
-    function initiateConnection() {
-
-        updateCallStatus();
-
-        var iceOptions = { "gatherPolicy": "all", 
-        "iceServers": [{ "urls": "turn:turn-testdrive.cloudapp.net:3478?transport=udp", "username": "redmond", "credential": "redmond123" }] };
-
-        iceGathr = new RTCIceGatherer(iceOptions);
-        iceTr = new RTCIceTransport(); 
-        dtlsTr = new RTCDtlsTransport(iceTr);
-        
-
-
-        if(!allowBundle){
-            iceGathr_2 = new RTCIceGatherer(iceOptions);
-            iceTr_2 = new RTCIceTransport(); 
-            dtlsTr_2 = new RTCDtlsTransport(iceTr_2); 
-        }
-
-        // Apply any local ICE candidate and send it to the remote
-        iceGathr.onlocalcandidate = function (evt) {
-            signalMessage(JSON.stringify({ "candidate": evt.candidate }));
-
-            localCandidatesCreated = false;
-
-            if(Object.keys(evt.candidate).length == 0){
-                localCandidatesCreated = true;
-
-                console.log("End of local ICE candidates");
-
-                signalMessage(JSON.stringify({
-                    params: {
-                        "ice": iceGathr.getLocalParameters(),
-                        "dtls": dtlsTr.getLocalParameters()
-                    }
-                }));
-
-                if(remoteIceParams){
-                    iceTr.start(iceGathr, remoteIceParams, (selfInfo.dtlsRole && selfInfo.dtlsRole === "client" ? "controlled" : "controlling" ));
-
-                    dtlsTr.start(remoteDtlsParams);
-                }
-            }
-            else {
-                console.log("Local ICE candidate: " + evt.candidate.ip + ":" + evt.candidate.port);
-            }
-        };
-
-        if(!allowBundle) iceGathr_2.onlocalcandidate = function (evt) {
-            signalMessage(JSON.stringify({ "candidate_2": evt.candidate }));
-
-            localCandidatesCreated_2 = false;
-
-            if(Object.keys(evt.candidate).length == 0){
-                localCandidatesCreated_2 = true;
-
-                console.log("End of local ICE candidates_2");
-
-                signalMessage(JSON.stringify({
-                    params: {
-                        "ice_2": iceGathr_2.getLocalParameters(),
-                        "dtls_2": dtlsTr_2.getLocalParameters()
-                    }
-                }));
+  function initiateConnection() {
+
+      updateCallStatus();
+
+      iceGathr = new RTCIceGatherer(configuration);
+      iceTr = new RTCIceTransport(); 
+      dtlsTr = new RTCDtlsTransport(iceTr);
+    
+      if(!allowBundle){
+          iceGathr_2 = new RTCIceGatherer(configuration);
+          iceTr_2 = new RTCIceTransport(); 
+          dtlsTr_2 = new RTCDtlsTransport(iceTr_2); 
+      }
+
+      // Apply any local ICE candidate and send it to the remote
+      iceGathr.onlocalcandidate = function (evt) {
+          signalMessage(JSON.stringify({ "candidate": evt.candidate }));
+
+          localCandidatesCreated = false;
+
+          if(Object.keys(evt.candidate).length == 0){
+              localCandidatesCreated = true;
+
+              console.log("End of local ICE candidates");
+
+              signalMessage(JSON.stringify({
+                  params: {
+                      "ice": iceGathr.getLocalParameters(),
+                      "dtls": dtlsTr.getLocalParameters()
+                  }
+              }));
+
+              if(remoteIceParams){
+                  iceTr.start(iceGathr, remoteIceParams, (selfInfo.dtlsRole && selfInfo.dtlsRole === "client" ? "controlled" : "controlling" ));
+
+                  dtlsTr.start(remoteDtlsParams);
+              }
+          }
+          else {
+              console.log("Local ICE candidate: " + evt.candidate.ip + ":" + evt.candidate.port);
+          }
+      };
+
+      if(!allowBundle) iceGathr_2.onlocalcandidate = function (evt) {
+          signalMessage(JSON.stringify({ "candidate_2": evt.candidate }));
+
+          localCandidatesCreated_2 = false;
+
+          if(Object.keys(evt.candidate).length == 0){
+              localCandidatesCreated_2 = true;
+
+              console.log("End of local ICE candidates_2");
 
-                if(remoteIceParams_2){
-                    iceTr_2.start(iceGathr_2, remoteIceParams_2, (selfInfo.dtlsRole && selfInfo.dtlsRole === "client" ? "controlled" : "controlling" ));
-
-                    dtlsTr_2.start(remoteDtlsParams_2);
-                }
-            }
-            else {
-                console.log("Local ICE candidate_2: " + evt.candidate.ip + ":" + evt.candidate.port);
-            }
-        };
-
-        // Get a local stream
-        renderStream = new MediaStream();
-        navigator.mediaDevices.getUserMedia({ 
-            "audio": true, 
-            "video": {
-                width: 640,
-                height: 480,
-                facingMode: "user" 
-            }
-        }).then( 
-            gotMedia
-        ).catch( 
-            gotMediaError
-        );
-        videoRenderer = document.getElementById("rtcRenderer");
-
-        // ice state has changed
-        iceTr.onicestatechange = function (evt) {
-            console.log("ICE state changed to |" + iceTr.state + "|");
-            document.body.style.cursor = "default";
+              signalMessage(JSON.stringify({
+                  params: {
+                      "ice_2": iceGathr_2.getLocalParameters(),
+                      "dtls_2": dtlsTr_2.getLocalParameters()
+                  }
+              }));
+
+              if(remoteIceParams_2){
+                  iceTr_2.start(iceGathr_2, remoteIceParams_2, (selfInfo.dtlsRole && selfInfo.dtlsRole === "client" ? "controlled" : "controlling" ));
+
+                  dtlsTr_2.start(remoteDtlsParams_2);
+              }
+          }
+          else {
+              console.log("Local ICE candidate_2: " + evt.candidate.ip + ":" + evt.candidate.port);
+          }
+      };
+
+      // Get a local stream
+      renderStream = new MediaStream();
+      navigator.mediaDevices.getUserMedia(mediaRestraints).then( 
+          gotMedia
+      ).catch( 
+          gotMediaError
+      );
+      videoRenderer = document.getElementById("rtcRenderer");
+
+      // ice state has changed
+      iceTr.onicestatechange = function (evt) {
+          console.log("ICE state changed to |" + iceTr.state + "|");
+          document.body.style.cursor = "default";
 
-            if (iceTr.state === "connected") { 
-                console.log("ICE transport has been established");
-                showMessage("ICE: Connection with peer established.");
-            }
+          if (iceTr.state === "connected") { 
+              console.log("ICE transport has been established");
+              showMessage("ICE: Connection with peer established.");
+          }
+
+          if (iceTr.state === "disconnected") { 
+              showMessage("Failed to establish connection with peer. Please disconnect and try again.", true);
 
-            if (iceTr.state === "disconnected") { 
-                showMessage("Failed to establish connection with peer. Please disconnect and try again.", true);
+              iceTr = null;
+
+          }
+      };
+
+      if(!allowBundle) iceTr_2.onicestatechange = function (evt) {
+          console.log("ICE_2 state changed to |" + iceTr_2.state + "|");
+          document.body.style.cursor = "default";
 
-                iceTr = null;
+          if (iceTr_2.state === "connected") { 
+              console.log("ICE_2 transport has been established");
+              showMessage("ICE: Connection with peer established.");
+          }
 
-            }
-        };
+          if (iceTr_2.state === "disconnected") { 
+              showMessage("Failed to establish connection with peer. Please disconnect and try again.", true);
 
-        if(!allowBundle) iceTr_2.onicestatechange = function (evt) {
-            console.log("ICE_2 state changed to |" + iceTr_2.state + "|");
-            document.body.style.cursor = "default";
+              iceTr_2 = null;
 
-            if (iceTr_2.state === "connected") { 
-                console.log("ICE_2 transport has been established");
-                showMessage("ICE: Connection with peer established.");
-            }
+          }
+      };
 
-            if (iceTr_2.state === "disconnected") { 
-                showMessage("Failed to establish connection with peer. Please disconnect and try again.", true);
+      iceTr.oncandidatepairchange = function (evt) {
+          console.log("ICE candidate pair changed to: " + JSON.stringify(evt.pair));
+      };
 
-                iceTr_2 = null;
+      if(!allowBundle) iceTr_2.oncandidatepairchange = function (evt) {
+          console.log("ICE candidate_2 pair changed to: " + JSON.stringify(evt.pair));
+      };
 
-            }
-        };
+      iceGathr.onerror = function (evt) {
+          showMessage("ICE transport failed. Please disconnect and try again.", true);
+      };
 
-        iceTr.oncandidatepairchange = function (evt) {
-            console.log("ICE candidate pair changed to: " + JSON.stringify(evt.pair));
-        };
+      if(!allowBundle) iceGathr_2.onerror = function (evt) {
 
-        if(!allowBundle) iceTr_2.oncandidatepairchange = function (evt) {
-            console.log("ICE candidate_2 pair changed to: " + JSON.stringify(evt.pair));
-        };
+          showMessage("ICE_2 transport failed. Please disconnect and try again.", true);
+      };
 
-        iceGathr.onerror = function (evt) {
-            showMessage("ICE transport failed. Please disconnect and try again.", true);
-        };
+      // dtls state has changed
+      dtlsTr.ondtlsstatechange = function (evt) {
+          console.log("DTLS state changed to |" + dtlsTr.state + "|");
+          document.body.style.cursor = "default";
 
-        if(!allowBundle) iceGathr_2.onerror = function (evt) {
+          if (dtlsTr.state === "connected") {  
+              console.log("DTLS transport has been established");
+              showMessage("Connection with peer established.");
+          }
+
+          if (dtlsTr.state === "disconnected" ||
+              dtlsTr.state === "closed") { 
 
-            showMessage("ICE_2 transport failed. Please disconnect and try again.", true);
-        };
+              console.log("DTLS transport has been lost");
+              showMessage("Connection with peer lost. Please disconnect and try again.", true);
 
-        // dtls state has changed
-        dtlsTr.ondtlsstatechange = function (evt) {
-            console.log("DTLS state changed to |" + dtlsTr.state + "|");
-            document.body.style.cursor = "default";
+              dtlsTr = null;
+          }
+      };
 
-            if (dtlsTr.state === "connected") {  
-                console.log("DTLS transport has been established");
-                showMessage("Connection with peer established.");
-            }
+      if(!allowBundle) dtlsTr_2.ondtlsstatechange = function (evt) {
+          console.log("DTLS_2 state changed to |" + dtlsTr_2.state + "|");
+          document.body.style.cursor = "default";
 
-            if (dtlsTr.state === "disconnected" ||
-                dtlsTr.state === "closed") { 
+          if (dtlsTr_2.state === "connected") {  
+              console.log("DTLS_2 transport has been established");
+              showMessage("Connection with peer established.");
+          }
 
-                console.log("DTLS transport has been lost");
-                showMessage("Connection with peer lost. Please disconnect and try again.", true);
+          if (dtlsTr_2.state === "disconnected" ||
+              dtlsTr_2.state === "closed") { 
 
-                dtlsTr = null;
-            }
-        };
+              console.log("DTLS_2 transport has been lost");
+              showMessage("Connection with peer lost. Please disconnect and try again.", true);
 
-        if(!allowBundle) dtlsTr_2.ondtlsstatechange = function (evt) {
-            console.log("DTLS_2 state changed to |" + dtlsTr_2.state + "|");
-            document.body.style.cursor = "default";
+              dtlsTr = null;
+          }
+      };
 
-            if (dtlsTr_2.state === "connected") {  
-                console.log("DTLS_2 transport has been established");
-                showMessage("Connection with peer established.");
-            }
+      dtlsTr.onerror = function (evt) {
+          showMessage("DTLS transport failed. Please disconnect and try again.", true);
+      };
+
+      if(!allowBundle) dtlsTr_2.onerror = function (evt) {
+          showMessage("DTLS_2 transport failed. Please disconnect and try again.", true);
+      };
+  }
 
-            if (dtlsTr_2.state === "disconnected" ||
-                dtlsTr_2.state === "closed") { 
+  function gotMedia(stream) {
+      var audioTracks = stream.getAudioTracks(); 
 
-                console.log("DTLS_2 transport has been lost");
-                showMessage("Connection with peer lost. Please disconnect and try again.", true);
+      if (audioTracks.length > 0) {
+          var audioTrack = audioTracks[0];
+          local_audio_MST = audioTrack;
+
+          audioSender = new RTCRtpSender(audioTrack, dtlsTr);  
+          sendAudioCaps = RTCRtpSender.getCapabilities("audio");  
+
+          signalMessage(JSON.stringify({
+              params: {
+                  "sendAudioCaps": sendAudioCaps,
+                  muxId: null
+              }
+          }));
+      }
+
+      var videoTracks = stream.getVideoTracks();
+
+      if (videoTracks.length > 0) {
+          var videoTrack = videoTracks[0];
+          local_video_MST = videoTrack;
+
+          if(allowPreview) {
+              previewStream = new MediaStream();
+              previewStream.addTrack(local_video_MST); 
+              videoPreview = document.getElementById("previewVideo");
+              videoPreview.srcObject = previewStream;
+          }
+
+          if(allowBundle)
+              videoSender = new RTCRtpSender(videoTrack, dtlsTr);
+          else
+              videoSender = new RTCRtpSender(videoTrack, dtlsTr_2);
 
-                dtlsTr = null;
-            }
-        };
+          sendVideoCaps = RTCRtpSender.getCapabilities("video");    
 
-        dtlsTr.onerror = function (evt) {
-            showMessage("DTLS transport failed. Please disconnect and try again.", true);
-        };
+          signalMessage(JSON.stringify({
+              params: {
+                  "sendVideoCaps": sendVideoCaps,
+                  muxId: null
+              }
+          }));
+      }
+
+      audioReceiver = new RTCRtpReceiver(dtlsTr, "audio");         
+      receiveAudioCaps = RTCRtpReceiver.getCapabilities("audio");  
 
-        if(!allowBundle) dtlsTr_2.onerror = function (evt) {
-            showMessage("DTLS_2 transport failed. Please disconnect and try again.", true);
-        };
-    }
-
-    function gotMedia(stream) {
-        var audioTracks = stream.getAudioTracks(); 
-
-        if (audioTracks.length > 0) {
-            var audioTrack = audioTracks[0];
-            local_audio_MST = audioTrack;
-
-            audioSender = new RTCRtpSender(audioTrack, dtlsTr);  
-            sendAudioCaps = RTCRtpSender.getCapabilities("audio");  
-
-            signalMessage(JSON.stringify({
-                params: {
-                    "sendAudioCaps": sendAudioCaps,
-                    muxId: null
-                }
-            }));
-        }
-
-        var videoTracks = stream.getVideoTracks();
-
-        if (videoTracks.length > 0) {
-            var videoTrack = videoTracks[0];
-            local_video_MST = videoTrack;
-
-            if(allowPreview) {
-                previewStream = new MediaStream();
-                previewStream.addTrack(local_video_MST); 
-                videoPreview = document.getElementById("previewVideo");
-                videoPreview.srcObject = previewStream;
-            }
-
-            if(allowBundle)
-                videoSender = new RTCRtpSender(videoTrack, dtlsTr);
-            else
-                videoSender = new RTCRtpSender(videoTrack, dtlsTr_2);
-
-            sendVideoCaps = RTCRtpSender.getCapabilities("video");    
-
-            signalMessage(JSON.stringify({
-                params: {
-                    "sendVideoCaps": sendVideoCaps,
-                    muxId: null
-                }
-            }));
-        }
-
-        audioReceiver = new RTCRtpReceiver(dtlsTr, "audio");         
-        receiveAudioCaps = RTCRtpReceiver.getCapabilities("audio");  
-
-        renderStream.addTrack(audioReceiver.track);
-
-        signalMessage(JSON.stringify({
-            params: {
-                "receiveAudioCaps": receiveAudioCaps
-            }
-        }));
-
-        if(allowBundle)
-            videoReceiver = new RTCRtpReceiver(dtlsTr, "video");   
-        else
-            videoReceiver = new RTCRtpReceiver(dtlsTr_2, "video");   
-
-        receiveVideoCaps = RTCRtpReceiver.getCapabilities("video");  
-
-        renderStream.addTrack(videoReceiver.track);
-
-        signalMessage(JSON.stringify({
-            params: {
-                "receiveVideoCaps": receiveVideoCaps
-            }
-        }));
-
-        if(audioReceiver)
-            if(remote_audioRecvParams){
-                var remote = remote_audioRecvParams;
-                var audioRecvParams = 
-                util.myCapsToRecvParams(receiveAudioCaps, remote.sendAudioCaps);
-
-                audioRecvParams.muxId = remote.muxId;
-
-                audioRecvParams.encodings
-                .push(util.RTCRtpEncodingParameters(1001, 0, 0, 0, 1.0)); 
-
-                audioReceiver.receive(audioRecvParams);
-                trackCount++;
-                if ( trackCount == 2) {
-                    videoRenderer.srcObject = renderStream;
-                }
-            }
-
-        if(videoReceiver)
-            if(remote_videoRecvParams) {
-                var remote = remote_videoRecvParams;
-                var videoRecvParams = 
-                util.myCapsToRecvParams(receiveVideoCaps, remote.sendVideoCaps);
-
-                videoRecvParams.muxId = remote.muxId;
-
-                videoRecvParams.encodings
-                .push(util.RTCRtpEncodingParameters(3003, 0, 0, 0, 1.0));
-
-                videoReceiver.receive(videoRecvParams);
-                trackCount++;
-                if ( trackCount == 2) {
-                    videoRenderer.srcObject = renderStream;
-                }
-            }
-
-        if(audioSender)
-            if( remote_audioSendParams ){
-                var remote = remote_audioSendParams;
-                var audioSendParams = 
-                util.myCapsToSendParams(sendAudioCaps, remote.receiveAudioCaps);
-
-                audioSendParams.encodings
-                .push(util.RTCRtpEncodingParameters(1001, 0, 0, 0, 1.0));
-
-                audioSender.send(audioSendParams);
-            }
-
-        if(videoSender)
-            if( remote_videoSendParams ) {
-                var remote = remote_videoSendParams;
-                var videoSendParams = 
-                util.myCapsToSendParams(sendVideoCaps, remote.receiveVideoCaps);
-
-                videoSendParams.encodings
-                .push(util.RTCRtpEncodingParameters(3003, 0, 0, 0, 1.0));
-
-                videoSender.send(videoSendParams);
-            }
-
-    }
-
-    util.myCapsToSendParams = function (sendCaps, remoteRecvCaps) {
-
-        if (!sendCaps || !remoteRecvCaps) { return; }
-
-        // compute intersection of both.
-        return util.RTCRtpParameters("", 
-            util.filterCodecParams(sendCaps.codecs, remoteRecvCaps.codecs),
-            util.filterHdrExtParams(sendCaps.headerExtensions, 
-                remoteRecvCaps.headerExtensions), [],
-            util.RTCRtcpParameters(0, "", false, true));
-    };
-
-    // RTCRtpParameters
-    util.RTCRtpParameters = function (inMuxId, inCodecs, inHeaderExtensions, 
-        inEncodings, inRtcp) {
-        return {
-            muxId: inMuxId || "",
-            codecs: inCodecs,
-            headerExtensions: inHeaderExtensions,
-            encodings: inEncodings,
-            rtcp: inRtcp
-        };
-    };
-
-    // RTCRtpCodecParameters
-    util.RTCRtpCodecParameters = function (inName, inPayloadType, inClockRate, 
-        inNumChannels, inRtcpFeedback, inParameters) {
-        return {
-            name: inName,
-            payloadType: inPayloadType,
-            clockRate: inClockRate,
-            numChannels: inNumChannels,
-            rtcpFeedback: inRtcpFeedback,
-            parameters: inParameters
-        };
-    };
-
-    // RTCRtcpParameters 
-    util.RTCRtcpParameters = function (inSsrc, inCname, inReducecdSize, inMux) {
-        return {
-            ssrc: inSsrc,
-            cname: inCname,
-            reducedSize: inReducecdSize,
-            mux: inMux
-        };
-    };
-
-    util.myCapsToRecvParams = function (recvCaps, remoteSendCaps) {
-        return util.myCapsToSendParams(remoteSendCaps, recvCaps);
-    };
-
-    util.filterCodecParams = function (left, right) {
-        var codecPrms = [];
-
-        if (left && right) {
-            left.forEach(function (leftItem) {
-                for (var i = 0; i < right.length; i++) {
-                    var codec = right[i];
-                    if (leftItem.name == codec.name && 
-                        leftItem.kind === codec.kind &&
-                        leftItem.preferredPayloadType === codec.preferredPayloadType &&
-                        leftItem.numChannels === codec.numChannels) {
-
-                        codecPrms.push(util.RTCRtpCodecParameters(codec.name, 
-                            codec.preferredPayloadType,
-                            codec.clockRate, codec.numChannels, 
-                            codec.rtcpFeedback, codec.parameters));
-
-                        break;
-                    }
-                }
-            });
-        }
-
-        return codecPrms;
-    };
-
-    util.filterHdrExtParams = function (left, right) {
-
-        var hdrExtPrms = [];
-
-        return hdrExtPrms;
-    };
-
-    util.RTCRtpEncodingParameters = function (inSsrc, inCodecPayloadType, inFec, 
-        inRtx, inPriority, inMaxBitRate, inMinQuality, inFramerateBias, 
-        inResolutionScale, inFramerateScale, inQualityScale, inActive, 
-        inEncodingId, inDependencyEncodingIds) {
-        return {
-            ssrc: inSsrc,
-            codecPayloadType: inCodecPayloadType,
-            fec: inFec,
-            rtx: inRtx,
-            priority: inPriority || 1.0,
-            maxBitrate: inMaxBitRate || 2000000.0,
-            minQuality: inMinQuality || 0,
-            framerateBias: inFramerateBias || 0.5,
-            resolutionScale: inResolutionScale || 1.0,
-            framerateScale: inFramerateScale || 1.0,
-            active: inActive || true,
-            encodingId: inEncodingId,
-            dependencyEncodingId: inDependencyEncodingIds
-        };
-    };
-
-    util.RTCIceServer = function (inUrls, inUsername, inCredentials) {
-        return {
-            urls: inUrls,
-            username: inUsername,
-            credentials: inCredentials
-        };
-    };
-
-    util.RTCIceGatherOptions = function (inGatherPolicy, inIceServers) {
-        return {
-            gatherPolicy: inGatherPolicy,
-            iceServers: inIceServers
-        };
-    };
+      renderStream.addTrack(audioReceiver.track);
+
+      signalMessage(JSON.stringify({
+          params: {
+              "receiveAudioCaps": receiveAudioCaps
+          }
+      }));
+
+      if(allowBundle)
+          videoReceiver = new RTCRtpReceiver(dtlsTr, "video");   
+      else
+          videoReceiver = new RTCRtpReceiver(dtlsTr_2, "video");   
+
+      receiveVideoCaps = RTCRtpReceiver.getCapabilities("video");  
+
+      renderStream.addTrack(videoReceiver.track);
+
+      signalMessage(JSON.stringify({
+          params: {
+              "receiveVideoCaps": receiveVideoCaps
+          }
+      }));
+
+      if(audioReceiver)
+          if(remote_audioRecvParams){
+              var remote = remote_audioRecvParams;
+              var audioRecvParams = 
+              util.myCapsToRecvParams(receiveAudioCaps, remote.sendAudioCaps);
+
+              audioRecvParams.muxId = remote.muxId;
+
+              audioRecvParams.encodings
+              .push(util.RTCRtpEncodingParameters(1001, 0, 0, 0, 1.0)); 
+
+              audioReceiver.receive(audioRecvParams);
+              trackCount++;
+              if ( trackCount == 2) {
+                  videoRenderer.srcObject = renderStream;
+              }
+          }
+
+      if(videoReceiver)
+          if(remote_videoRecvParams) {
+              var remote = remote_videoRecvParams;
+              var videoRecvParams = 
+              util.myCapsToRecvParams(receiveVideoCaps, remote.sendVideoCaps);
+
+              videoRecvParams.muxId = remote.muxId;
+
+              videoRecvParams.encodings
+              .push(util.RTCRtpEncodingParameters(3003, 0, 0, 0, 1.0));
+
+              videoReceiver.receive(videoRecvParams);
+              trackCount++;
+              if ( trackCount == 2) {
+                  videoRenderer.srcObject = renderStream;
+              }
+          }
+
+      if(audioSender)
+          if( remote_audioSendParams ){
+              var remote = remote_audioSendParams;
+              var audioSendParams = 
+              util.myCapsToSendParams(sendAudioCaps, remote.receiveAudioCaps);
+
+              audioSendParams.encodings
+              .push(util.RTCRtpEncodingParameters(1001, 0, 0, 0, 1.0));
+
+              audioSender.send(audioSendParams);
+          }
+
+      if(videoSender)
+          if( remote_videoSendParams ) {
+              var remote = remote_videoSendParams;
+              var videoSendParams = 
+              util.myCapsToSendParams(sendVideoCaps, remote.receiveVideoCaps);
+
+              videoSendParams.encodings
+              .push(util.RTCRtpEncodingParameters(3003, 0, 0, 0, 1.0));
+
+              videoSender.send(videoSendParams);
+          }
+
+  }
+
+  util.myCapsToSendParams = function (sendCaps, remoteRecvCaps) {
+
+      if (!sendCaps || !remoteRecvCaps) { return; }
+
+      // compute intersection of both.
+      return util.RTCRtpParameters("", 
+          util.filterCodecParams(sendCaps.codecs, remoteRecvCaps.codecs),
+          util.filterHdrExtParams(sendCaps.headerExtensions, 
+              remoteRecvCaps.headerExtensions), [],
+          util.RTCRtcpParameters(0, "", false, true));
+  };
+
+  // RTCRtpParameters
+  util.RTCRtpParameters = function (inMuxId, inCodecs, inHeaderExtensions, 
+      inEncodings, inRtcp) {
+      return {
+          muxId: inMuxId || "",
+          codecs: inCodecs,
+          headerExtensions: inHeaderExtensions,
+          encodings: inEncodings,
+          rtcp: inRtcp
+      };
+  };
+
+  // RTCRtpCodecParameters
+  util.RTCRtpCodecParameters = function (inName, inPayloadType, inClockRate, 
+      inNumChannels, inRtcpFeedback, inParameters) {
+      return {
+          name: inName,
+          payloadType: inPayloadType,
+          clockRate: inClockRate,
+          numChannels: inNumChannels,
+          rtcpFeedback: inRtcpFeedback,
+          parameters: inParameters
+      };
+  };
+
+  // RTCRtcpParameters 
+  util.RTCRtcpParameters = function (inSsrc, inCname, inReducecdSize, inMux) {
+      return {
+          ssrc: inSsrc,
+          cname: inCname,
+          reducedSize: inReducecdSize,
+          mux: inMux
+      };
+  };
+
+  util.myCapsToRecvParams = function (recvCaps, remoteSendCaps) {
+      return util.myCapsToSendParams(remoteSendCaps, recvCaps);
+  };
+
+  util.filterCodecParams = function (left, right) {
+      var codecPrms = [];
+
+      if (left && right) {
+          left.forEach(function (leftItem) {
+              for (var i = 0; i < right.length; i++) {
+                  var codec = right[i];
+                  if (leftItem.name == codec.name && 
+                      leftItem.kind === codec.kind &&
+                      leftItem.preferredPayloadType === codec.preferredPayloadType &&
+                      leftItem.numChannels === codec.numChannels) {
+
+                      codecPrms.push(util.RTCRtpCodecParameters(codec.name, 
+                          codec.preferredPayloadType,
+                          codec.clockRate, codec.numChannels, 
+                          codec.rtcpFeedback, codec.parameters));
+
+                      break;
+                  }
+              }
+          });
+      }
+
+      return codecPrms;
+  };
+
+  util.filterHdrExtParams = function (left, right) {
+
+      var hdrExtPrms = [];
+
+      return hdrExtPrms;
+  };
+
+  util.RTCRtpEncodingParameters = function (inSsrc, inCodecPayloadType, inFec, 
+      inRtx, inPriority, inMaxBitRate, inMinQuality, inFramerateBias, 
+      inResolutionScale, inFramerateScale, inQualityScale, inActive, 
+      inEncodingId, inDependencyEncodingIds) {
+      return {
+          ssrc: inSsrc,
+          codecPayloadType: inCodecPayloadType,
+          fec: inFec,
+          rtx: inRtx,
+          priority: inPriority || 1.0,
+          maxBitrate: inMaxBitRate || 2000000.0,
+          minQuality: inMinQuality || 0,
+          framerateBias: inFramerateBias || 0.5,
+          resolutionScale: inResolutionScale || 1.0,
+          framerateScale: inFramerateScale || 1.0,
+          active: inActive || true,
+          encodingId: inEncodingId,
+          dependencyEncodingId: inDependencyEncodingIds
+      };
+  };
+
+  util.RTCIceServer = function (inUrls, inUsername, inCredentials) {
+      return {
+          urls: inUrls,
+          username: inUsername,
+          credentials: inCredentials
+      };
+  };
+
+  util.RTCIceGatherOptions = function (inGatherPolicy, inIceServers) {
+      return {
+          gatherPolicy: inGatherPolicy,
+          iceServers: inIceServers
+      };
+  };
 
 
 
@@ -1025,334 +1004,329 @@ function localDescCreated(desc) {
 /*=====  End of Call peer  ======*/
 
 
-    function showMessage(msg, alrt) {
+  function showMessage(msg, alrt) {
 
-        var stat = document.getElementById("footer-status");
+      var stat = document.getElementById("footer-status");
 
-        if (stat) {
-            stat.innerHTML = msg;
-        }
+      if (stat) {
+          stat.innerHTML = msg;
+      }
 
-        if (alrt) {
-            alert(msg);
-        }
+      if (alrt) {
+          alert(msg);
+      }
 
-        console.log(msg);
-    }
+      console.log(msg);
+  }
 
-    function logError(error) {
-      console.warn(error.name + ': ' + error.message);
-    }
+  function logError(error) {
+    console.warn(error.name + ': ' + error.message);
+  }
 
 
 
-// Function that handles changers to the signalingChannel - server 
-// among others handles connect, disconnect, call, hangup...
-    function handleMessages(evt) {
+// Function that handles messages received through signaling channel(server)
+  function handleMessages(evt) {
 
-        if (!pc && checkIfWebRTC)
-            start();
+      if (!pc && checkIfWebRTC)
+          startWebRTC();
 
-        var message = JSON.parse(evt.data);
+      var message = JSON.parse(evt.data);
 
-        console.log(JSON.stringify(message));
+      console.log(JSON.stringify(message));
 
-        if (message.contacts) {
-          var values = message.contacts.split("\n");
-          for (var i = 0; i < values.length; i++) {
-            if (values[i] != "") {
-              var peer_information = values[0].split(",");
+      if (message.contacts) {
+        var values = message.contacts.split("\n");
+        for (var i = 0; i < values.length; i++) {
+          if (values[i] != "") {
+            var peer_information = values[0].split(",");
 
-              if (peer_information[2] == "0") {
-                contacts.delete(peer_information[0]);
+            if (peer_information[2] == "0") {
+              contacts.delete(peer_information[0]);
 
-                var item = document.getElementById("contact" + peer_information[1]);
-                item.parentNode.removeChild(item);
-              }
-              else {
-                contacts.set(peer_information[0], peer_information[1]);
-
-                var ul = document.getElementById("contactList");
-                var li = document.createElement("li");
-
-                li.setAttribute("id", "contact" + peer_information[1]);
-                li.className = "contact";
-
-                var a = document.createElement("a");
-                a.textContent = peer_information[0];
-                a.setAttribute('href', "#");
-                li.appendChild(a);
-                ul.appendChild(li);
-              }
-            }
-          }
-        }
-
-        if (message.peerMessage) {
-          console.log(JSON.stringify(message.peerMessage));
-        }
-
-        if (message.registerdone) {
-            console.log(JSON.stringify(message.registerdone));
-            updateSelfInformation(message.registerdone);
-            updateServerStatus();
-        }
-
-        if (message.peervalidateresponse) {
-            if (message.peervalidateresponse === "valid") {
-                call();
+              var item = document.getElementById("contact" + peer_information[1]);
+              item.parentNode.removeChild(item);
             }
             else {
-                clearPeerDetails();
-                showMessage("Invalid peer details.", true);
+              contacts.set(peer_information[0], peer_information[1]);
+
+              var ul = document.getElementById("contactList");
+              var li = document.createElement("li");
+
+              li.setAttribute("id", "contact" + peer_information[1]);
+              li.className = "contact";
+
+              var a = document.createElement("a");
+              a.textContent = peer_information[0];
+              a.setAttribute('href', "#");
+              li.appendChild(a);
+              ul.appendChild(li);
             }
-        }
-
-        if (message.connectrequest) {
-            handleCallRequest(message);
-            if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) != false && checkIfORTC){
-                selfInfo.dtlsRole = "client";
-                initiateConnection();
-            }
-        }
-
-        if (message.connectresponse) {
-            if (message.connectresponse === "reject") {
-
-                showMessage("Peer rejected offer.", true);
-                clearPeerDetails();
-            }
-
-            else if (message.connectresponse === "accept") {
-            if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) != false 
-                && checkIfORTC){
-              selfInfo.dtlsRole = "server";
-              initiateConnection();
-            }
-            else
-                getMedia();
-            }
-
-            else {
-              showMessage("Bad response", true);
-            }
-        }
-
-        if (message.start && checkPeerSupport(
-            JSON.stringify(peerInfo.friendlyName)) != false && checkIfORTC) {
-            selfInfo.dtlsRole = message.dtlsrole;
-            initiateConnection();
-        }
-
-        if (message.disconnect && isBusy) {
-          if(!pc.localDescription){
-            showMessage("Peer terminated connection. Please disconnect and try again.");
           }
-          else{
-            showMessage("Peer terminated connection.");
-          }
-            closeConnection(true);
         }
+      }
 
-        if (message.serverDisconnected) {
-          showMessage("Disconnected from Peer Connection Server");
-          if (isBusy) {
-            closeConnection();
+      if (message.peerMessage) {
+        console.log(JSON.stringify(message.peerMessage));
+      }
+
+      if (message.registerdone) {
+          console.log(JSON.stringify(message.registerdone));
+          updateSelfInformation(message.registerdone);
+          updateServerStatus();
+      }
+
+      if (message.peervalidateresponse) {
+          if (message.peervalidateresponse === "valid") {
+              call();
           }
           else {
-            document.getElementById("call_btn").disabled = true;
+              clearPeerDetails();
+              showMessage("Invalid peer details.", true);
           }
-          // update UI
-          updateServerStatus(true);
-          var ul = document.getElementById("contactList");
-          ul.innerHTML = "";
-
-          // clean up
-          contacts.clear();
-          selectedContactName = null;
-          selectedContactId = null;
-
-        }
-
-        if (message.error) {
-            showMessage("Remote error: " + message.error, true);
-        }
-
-      if(message.candidate && (!iceTr || !dtlsTr)){
-        //fixes DOMException: Error processing ICE candidate
-        //by only setting candidates when remoteDescription is not set
-        if(pc.remoteDescription){
-            console.log("Remote SDP candidate:\n"+JSON.stringify(message.candidate));
-            pc.addIceCandidate(new RTCIceCandidate(message.candidate));
-         if(window.navigator.userAgent.indexOf("Edge") > -1){
-            earlyCandidates.push(message.candidate);
-          }
-           
-        }
-          else{
-            console.log("Ice candidate postponed!");
-            earlyCandidates.push(message.candidate);
-          }
-           
       }
 
-      if(message.sdp){
-        
-        //set remote description after getting offer or answer from the other peer
-        pc.setRemoteDescription(message.sdp, function () {
-
-          if(earlyCandidates.length>0){
-            earlyCandidates.forEach( function(candidate) {
-              pc.addIceCandidate(new RTCIceCandidate(candidate));
-              console.log("Postponed ice candidate added.");
-            });
+      if (message.connectrequest) {
+          handleCallRequest(message);
+          if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) != false && checkIfORTC){
+              selfInfo.dtlsRole = "client";
+              initiateConnection();
           }
-          else{
-            console.log("No early ice candidates to add.")
+      }
+
+      if (message.connectresponse) {
+          if (message.connectresponse === "reject") {
+
+              showMessage("Peer rejected offer.", true);
+              clearPeerDetails();
           }
 
-          // if we received an offer, we need set up the stream to send the answer
-          if (pc.remoteDescription.type == "offer"){
-                getMedia();
+          else if (message.connectresponse === "accept") {
+          if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) != false 
+              && checkIfORTC){
+            selfInfo.dtlsRole = "server";
+            initiateConnection();
+          }
+          else
+              getMedia();
+          }
+
+          else {
+            showMessage("Bad response", true);
+          }
+      }
+
+      if (message.start && checkPeerSupport(
+          JSON.stringify(peerInfo.friendlyName)) != false && checkIfORTC) {
+          selfInfo.dtlsRole = message.dtlsrole;
+          initiateConnection();
+      }
+
+      if (message.disconnect && isBusy) {
+        if(!pc.localDescription){
+          showMessage("Peer terminated connection. Please disconnect and try again.");
+        }
+        else{
+          showMessage("Peer terminated connection.");
+        }
+          closeConnection(true);
+      }
+
+      if (message.serverDisconnected) {
+        showMessage("Disconnected from Peer Connection Server");
+        if (isBusy) {
+          closeConnection();
+        }
+        else {
+          document.getElementById("call_btn").disabled = true;
+        }
+        // update UI
+        updateServerStatus(true);
+        var ul = document.getElementById("contactList");
+        ul.innerHTML = "";
+
+        // clean up
+        contacts.clear();
+        selectedContactName = null;
+        selectedContactId = null;
+
+      }
+
+      if (message.error) {
+          showMessage("Remote error: " + message.error, true);
+      }
+
+    if(message.candidate && (!iceTr || !dtlsTr)){
+      //fixes DOMException: Error processing ICE candidate
+      //by only setting candidates when remoteDescription is not set
+      if(pc.remoteDescription && pc.remoteDescription.type){
+          console.log("Remote SDP candidate:\n"+JSON.stringify(message.candidate));
+          pc.addIceCandidate(new RTCIceCandidate(message.candidate));           
+      }
+        else{
+          console.log("Ice candidate postponed!");
+          earlyCandidates.push(message.candidate);
+        }
+         
+    }
+
+    if(message.sdp){
+      
+      //set remote description after getting offer or answer from the other peer
+      pc.setRemoteDescription(message.sdp, function () {
+
+        if(earlyCandidates.length>0){
+          earlyCandidates.forEach( function(candidate) {
+            pc.addIceCandidate(new RTCIceCandidate(candidate));
+            console.log("Postponed ice candidate added.");
+          });
+        }
+        else{
+          console.log("No early ice candidates to add.")
+        }
+
+        // if we received an offer, we need set up the stream to send the answer
+        if (pc.remoteDescription.type == "offer"){
+              getMedia();
+            }
+
+          }, logError);
+    }
+
+      if (iceTr && dtlsTr) {
+          if (message.candidate) {
+
+              console.log("Remote ICE candidate: " + message.candidate.ip + ":" 
+                  + message.candidate.port);
+
+              if(Object.keys(message.candidate).length > 0) {
+                  remoteCandidates.push(message.candidate);
+              }
+              else {
+                  iceTr.setRemoteCandidates(remoteCandidates); 
               }
 
-            }, logError);
+              // the alternative option is to call addRemoteCandidate 
+              //including the empty candidate
+              //iceTr.addRemoteCandidate(message.candidate);
+
+          }
+
+          if (message.params) {
+              var remote = message.params;
+
+              if (remote.ice) {
+                  remoteIceParams = remote.ice;
+                  remoteDtlsParams = remote.dtls;
+
+                  if(localCandidatesCreated){
+                      iceTr.start(iceGathr, remoteIceParams, (selfInfo.dtlsRole && 
+                          selfInfo.dtlsRole === "client" ? "controlled" 
+                          : "controlling" ));
+                      dtlsTr.start(remoteDtlsParams);
+                  }
+              }
+
+              if (remote.sendAudioCaps) {
+                  if (audioReceiver) {
+                      var audioRecvParams = util.myCapsToRecvParams(receiveAudioCaps, 
+                          remote.sendAudioCaps);
+                      audioRecvParams.muxId = remote.muxId;
+                      audioRecvParams.encodings.push(
+                          util.RTCRtpEncodingParameters(1001, 0, 0, 0, 1.0)); 
+                      audioReceiver.receive(audioRecvParams);
+
+                      trackCount++;
+                      if ( trackCount == 2) {
+                          videoRenderer.srcObject = renderStream;
+                      }
+                  }
+                  else {
+                      remote_audioRecvParams = remote;  
+                  }
+              }
+
+              if (remote.sendVideoCaps) {
+                  if (videoReceiver) {
+                      var videoRecvParams = util.myCapsToRecvParams(receiveVideoCaps, 
+                          remote.sendVideoCaps);
+                      videoRecvParams.muxId = remote.muxId;
+                      videoRecvParams.encodings.push(
+                          util.RTCRtpEncodingParameters(3003, 0, 0, 0, 1.0));
+                      videoReceiver.receive(videoRecvParams);
+
+                      trackCount++;
+                      if ( trackCount == 2) {
+                          videoRenderer.srcObject = renderStream;
+                      }
+                  }
+                  else {
+                      remote_videoRecvParams = remote;
+                  }
+              }
+
+              if (remote.receiveAudioCaps) {
+                  if (audioSender) {
+                      var audioSendParams = util.myCapsToSendParams(sendAudioCaps, 
+                          remote.receiveAudioCaps);
+                      audioSendParams.encodings.push(
+                          util.RTCRtpEncodingParameters(1001, 0, 0, 0, 1.0));
+                      audioSender.send(audioSendParams);
+                  }
+                  else {
+                      remote_audioSendParams = remote; 
+                  }
+              }
+
+              if (remote.receiveVideoCaps) {
+                  if (videoSender) {
+                      var videoSendParams = util.myCapsToSendParams(sendVideoCaps, 
+                          remote.receiveVideoCaps);
+                      videoSendParams.encodings.push(
+                          util.RTCRtpEncodingParameters(3003, 0, 0, 0, 1.0));
+                      videoSender.send(videoSendParams);
+                  }
+                  else {
+                      remote_videoSendParams = remote;
+                  }
+              }
+          }
       }
 
-        if (iceTr && dtlsTr) {
-            if (message.candidate) {
+      if (iceTr_2 && dtlsTr_2) {
+          if (message.candidate_2) {
+              console.log("Remote ICE candidate_2: " + message.candidate_2.ip 
+                  + ":" + message.candidate_2.port);
 
-                console.log("Remote ICE candidate: " + message.candidate.ip + ":" 
-                    + message.candidate.port);
+              if(Object.keys(message.candidate_2).length > 0) {
+                  remoteCandidates_2.push(message.candidate_2);
+              }
+              else {
+                  iceTr_2.setRemoteCandidates(remoteCandidates_2); 
+              }
+          }
 
-                if(Object.keys(message.candidate).length > 0) {
-                    remoteCandidates.push(message.candidate);
-                }
-                else {
-                    iceTr.setRemoteCandidates(remoteCandidates); 
-                }
+          if (message.params) {
+              var remote = message.params;
+              if (remote.ice_2) {
 
-                // the alternative option is to call addRemoteCandidate 
-                //including the empty candidate
-                //iceTr.addRemoteCandidate(message.candidate);
+                  remoteIceParams_2 = remote.ice_2;
+                  remoteDtlsParams_2 = remote.dtls_2;
 
-            }
+                  if(localCandidatesCreated_2){
 
-            if (message.params) {
-                var remote = message.params;
+                      iceTr_2.start(iceGathr_2, remoteIceParams_2, 
+                          (selfInfo.dtlsRole && 
+                              selfInfo.dtlsRole === "client" ? "controlled" 
+                              : "controlling" ));
 
-                if (remote.ice) {
-                    remoteIceParams = remote.ice;
-                    remoteDtlsParams = remote.dtls;
+                      dtlsTr_2.start(remoteDtlsParams_2);
+                  }
+              }
 
-                    if(localCandidatesCreated){
-                        iceTr.start(iceGathr, remoteIceParams, (selfInfo.dtlsRole && 
-                            selfInfo.dtlsRole === "client" ? "controlled" 
-                            : "controlling" ));
-                        dtlsTr.start(remoteDtlsParams);
-                    }
-                }
-
-                if (remote.sendAudioCaps) {
-                    if (audioReceiver) {
-                        var audioRecvParams = util.myCapsToRecvParams(receiveAudioCaps, 
-                            remote.sendAudioCaps);
-                        audioRecvParams.muxId = remote.muxId;
-                        audioRecvParams.encodings.push(
-                            util.RTCRtpEncodingParameters(1001, 0, 0, 0, 1.0)); 
-                        audioReceiver.receive(audioRecvParams);
-
-                        trackCount++;
-                        if ( trackCount == 2) {
-                            videoRenderer.srcObject = renderStream;
-                        }
-                    }
-                    else {
-                        remote_audioRecvParams = remote;  
-                    }
-                }
-
-                if (remote.sendVideoCaps) {
-                    if (videoReceiver) {
-                        var videoRecvParams = util.myCapsToRecvParams(receiveVideoCaps, 
-                            remote.sendVideoCaps);
-                        videoRecvParams.muxId = remote.muxId;
-                        videoRecvParams.encodings.push(
-                            util.RTCRtpEncodingParameters(3003, 0, 0, 0, 1.0));
-                        videoReceiver.receive(videoRecvParams);
-
-                        trackCount++;
-                        if ( trackCount == 2) {
-                            videoRenderer.srcObject = renderStream;
-                        }
-                    }
-                    else {
-                        remote_videoRecvParams = remote;
-                    }
-                }
-
-                if (remote.receiveAudioCaps) {
-                    if (audioSender) {
-                        var audioSendParams = util.myCapsToSendParams(sendAudioCaps, 
-                            remote.receiveAudioCaps);
-                        audioSendParams.encodings.push(
-                            util.RTCRtpEncodingParameters(1001, 0, 0, 0, 1.0));
-                        audioSender.send(audioSendParams);
-                    }
-                    else {
-                        remote_audioSendParams = remote; 
-                    }
-                }
-
-                if (remote.receiveVideoCaps) {
-                    if (videoSender) {
-                        var videoSendParams = util.myCapsToSendParams(sendVideoCaps, 
-                            remote.receiveVideoCaps);
-                        videoSendParams.encodings.push(
-                            util.RTCRtpEncodingParameters(3003, 0, 0, 0, 1.0));
-                        videoSender.send(videoSendParams);
-                    }
-                    else {
-                        remote_videoSendParams = remote;
-                    }
-                }
-            }
-        }
-
-        if (iceTr_2 && dtlsTr_2) {
-            if (message.candidate_2) {
-                console.log("Remote ICE candidate_2: " + message.candidate_2.ip 
-                    + ":" + message.candidate_2.port);
-
-                if(Object.keys(message.candidate_2).length > 0) {
-                    remoteCandidates_2.push(message.candidate_2);
-                }
-                else {
-                    iceTr_2.setRemoteCandidates(remoteCandidates_2); 
-                }
-            }
-
-            if (message.params) {
-                var remote = message.params;
-                if (remote.ice_2) {
-
-                    remoteIceParams_2 = remote.ice_2;
-                    remoteDtlsParams_2 = remote.dtls_2;
-
-                    if(localCandidatesCreated_2){
-
-                        iceTr_2.start(iceGathr_2, remoteIceParams_2, 
-                            (selfInfo.dtlsRole && 
-                                selfInfo.dtlsRole === "client" ? "controlled" 
-                                : "controlling" ));
-
-                        dtlsTr_2.start(remoteDtlsParams_2);
-                    }
-                }
-
-            }
-        }
-    }
+          }
+      }
+  }
 
 
 }(typeof window === "object" ? window : global));

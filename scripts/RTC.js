@@ -1024,7 +1024,6 @@
   }
 
 
-
 // Function that handles messages received through signaling channel(server)
   function handleMessages(evt) {
 
@@ -1156,6 +1155,7 @@
           showMessage("Remote error: " + message.error, true);
       }
 
+    //when resceiving candidates from WebRTC 
     if(message.candidate && (!iceTr || !dtlsTr)){
       //fixes DOMException: Error processing ICE candidate
       //by only setting candidates when remoteDescription is not set
@@ -1163,10 +1163,10 @@
           console.log("Remote SDP candidate:\n"+JSON.stringify(message.candidate));
           pc.addIceCandidate(new RTCIceCandidate(message.candidate));           
       }
-        else{
-          console.log("Ice candidate postponed!");
-          earlyCandidates.push(message.candidate);
-        }
+      else{
+        console.log("Ice candidate postponed!");
+        earlyCandidates.push(message.candidate);
+      }
          
     }
 

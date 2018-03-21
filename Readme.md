@@ -1,10 +1,6 @@
 # PeerCC-Browser
 
-<<<<<<< HEAD
 Sample that uses ORTC and WebRTC to make a audio/video call between two peers  <br />
-=======
-Sample that uses ORTC and WebRTC to make a audio/video call between two peers
->>>>>>> e39d9f93215c725d778897d37e37d5f362ed64ee
 **Live sample: [webrtcpeer.com](https://www.webrtcpeer.com/)**
 
 ## Getting Started

@@ -888,7 +888,6 @@
           util.RTCRtcpParameters(0, "", false, true));
   };
 
-  // RTCRtpParameters
   util.RTCRtpParameters = function (inMuxId, inCodecs, inHeaderExtensions, 
       inEncodings, inRtcp) {
       return {
@@ -900,7 +899,6 @@
       };
   };
 
-  // RTCRtpCodecParameters
   util.RTCRtpCodecParameters = function (inName, inPayloadType, inClockRate, 
       inNumChannels, inRtcpFeedback, inParameters) {
       return {
@@ -913,7 +911,6 @@
       };
   };
 
-  // RTCRtcpParameters 
   util.RTCRtcpParameters = function (inSsrc, inCname, inReducecdSize, inMux) {
       return {
           ssrc: inSsrc,
@@ -1005,43 +1002,6 @@
 
 
   function showMessage(msg, alrt) {
-      var stat = document.getElementById("footer-status");
-
-      if (stat) {
-          stat.innerHTML = msg;
-      }
-
-      if (alrt) {
-          alert(msg);
-      }
-
-      console.log(msg);
-  }
-
-  function logError(error) {
-    console.warn(error.name + ': ' + error.message);
-  }
-
-
-// Function that handles messages received through signaling channel(server)
-  function handleMessages(evt) {
-
-      if (!pc && checkIfWebRTC)
-          startWebRTC();
-
-      var message = JSON.parse(evt.data);
-
-      console.log(JSON.stringify(message));
-
-      if (message.contacts) {
-        var values = message.contacts.split("\n");
-        for (var i = 0; i < values.length; i++) {
-          if (values[i] != "") {
-            var peer_information = values[0].split(",");
-
-            if (peer_information[2] == "0") {
-              contacts.delete(peer_information[0]);
-
 
       var stat = document.getElementById("footer-status");
 
@@ -1059,7 +1019,6 @@
   function logError(error) {
     console.warn(error.name + ': ' + error.message);
   }
-
 
 
 // Function that handles messages received through signaling channel(server)
@@ -1193,7 +1152,7 @@
           showMessage("Remote error: " + message.error, true);
       }
 
-    //when resceiving candidates from WebRTC 
+    //when resceiving candidates from WebRTC
     if(message.candidate && (!iceTr || !dtlsTr)){
       //fixes DOMException: Error processing ICE candidate
       //by only setting candidates when remoteDescription is not set
@@ -1201,10 +1160,10 @@
           console.log("Remote SDP candidate:\n"+JSON.stringify(message.candidate));
           pc.addIceCandidate(new RTCIceCandidate(message.candidate));           
       }
-      else{
-        console.log("Ice candidate postponed!");
-        earlyCandidates.push(message.candidate);
-      }
+        else{
+          console.log("Ice candidate postponed!");
+          earlyCandidates.push(message.candidate);
+        }
          
     }
 

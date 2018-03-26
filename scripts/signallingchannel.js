@@ -34,8 +34,6 @@
 
         self = this;
         this.defineEventProperty('message');
-
-        //start();
     }
 
     Object.inherits(SignallingChannel, EventTarget);

@@ -10,21 +10,6 @@
  *   
  *   See the Apache 2 License for the specific language governing permissions and limitations under the License.
  */
-/*
-WEBIDL
-// Introduced in DOM Level 2:
-interface EventTarget
-{
-  // Modified in DOM Level 3:
-  void    addEventListener(DOMString type, 
-                           EventListener? listener, 
-                           optional boolean useCapture = false);
-  void    removeEventListener(DOMString type, 
-                              EventListener? listener, 
-                              optional boolean useCapture = false);
-  boolean dispatchEvent(Event event);
-};
-*/
 
 (function(g) {
   'use strict'; /*jshint browser:true,node:true*/

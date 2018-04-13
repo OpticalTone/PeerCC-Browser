@@ -5,6 +5,7 @@
   <meta charset="utf-8" />
   <link rel="stylesheet" href="https://edgeportal.blob.core.windows.net/media/demotemplate.css" type="text/css" />
   <link rel="stylesheet" href="/styles/rtc-peer.css" type="text/css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RTC Peer</title>
   <script src="node_modules/webrtc-adapter/out/adapter.js"></script>
@@ -34,6 +35,15 @@
               <div id="showName">
                 <h3>Your name: </h3>
                 <p id="name"></p>
+
+                <input type="checkbox" name="mute" id="mute">
+                <label for="mute" class="mute">
+                  <i class="fas fa-microphone" id="mute_icon"></i>
+                </label>
+                <input type="checkbox" name="muteVideo" id="muteVideo">
+                <label for="muteVideo" class="muteVideo">
+                  <i class="fas fa-video" id="muteVideo_icon"></i>
+                </label>
               </div>
               <form action="" id="changeName" onsubmit="changeName()">
                 

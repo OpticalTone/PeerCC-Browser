@@ -114,3 +114,19 @@ li a {
 label[for="toggleTrickleIce"] {
   font-size: 22px;
 }
+
+input#mute {
+  display: none;
+}
+
+#mute_icon {
+  color: red;
+}
+
+input#muteVideo {
+  display: none;
+}
+
+#muteVideo_icon {
+  color: red;
+}

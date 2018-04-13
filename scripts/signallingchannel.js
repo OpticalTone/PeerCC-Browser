@@ -28,6 +28,7 @@
     var waitMethod = "/wait?peer_id=";
     var signOutMethod = "/sign_out?peer_id=";
     var selfId = null;
+    var pragmaId = null;
 
     function SignallingChannel() {
         EventTarget.call(this);
@@ -88,6 +89,7 @@
           if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200) {
             console.log(anHttpRequest.getAllResponseHeaders());
             var pragmaHeaderValue = anHttpRequest.getResponseHeader("Pragma");
+            pragmaId = pragmaHeaderValue;
             responseCallback(pragmaHeaderValue, anHttpRequest.responseText);
           }
         }
@@ -203,10 +205,8 @@
             console.log('SEND sdp');
 
             message = JSON.stringify({
-                kind: 'sdp',
-                selfInfo: selfInfo,
-                peerInfo: peerInfo,
-                sdp: data.sdp
+                type: data.sdp.type,
+                sdp: data.sdp.sdp
             });
 
             aClient = new HttpClient();
@@ -219,6 +219,26 @@
               onMessageReceived(header, response);
             });
             return;
+        }
+
+        if (data.candidateSDP) {
+
+          console.log('SEND SDP candidate');
+          var message = JSON.stringify({
+              "sdpMid":data.candidateSDP.sdpMid,
+              "sdpMLineIndex":data.candidateSDP.sdpMLineIndex,
+              candidate: data.candidateSDP.candidate
+          });
+          var aClient = new HttpClient();
+          var response = 0;
+
+          var postRequest = createPostUrl(selfInfo.id, peerInfo.id);
+          aClient.post(postRequest, message, function (header, response) {
+            // do something with response
+            console.log(response);
+            onMessageReceived(header, response);
+          });
+          return;
         }
 
         if (data.candidate) {
@@ -522,6 +542,21 @@
         else if (e.kind === 'duplicate') {
             console.log('RECV: duplicate');
             dispatchMessage(JSON.stringify({ duplicate: true }));
+        }
+        else if (e.sdp) {
+            console.log('RECV: direct sdp');
+            dispatchMessage(JSON.stringify({ DirectSDP: { 
+                "peerInfo":{"id":pragmaId},
+                "type": e.type,
+                "sdp": e.sdp }}));
+        }
+        else if (e.candidate) {
+            console.log('RECV: direct candidate');
+            dispatchMessage(JSON.stringify({ 
+              DirectCandidate: {
+              "sdpMid":e.sdpMid,
+              "sdpMLineIndex":e.sdpMLineIndex,
+              candidate : e.candidate }}));
         }
     }
 

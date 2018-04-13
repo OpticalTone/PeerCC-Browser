@@ -70,6 +70,7 @@
   var trickleCheckbox;
   var earlyCandidates = [];
 
+
   var util = {};
 
   var offerOptions = {
@@ -119,6 +120,8 @@
       document.getElementById("call_btn").value = "Call";
       document.getElementById("call_btn").disabled;
       document.getElementById("changeName").style.display = "initial";
+      document.getElementById("mute_icon").style.display = 'none';
+      document.getElementById("muteVideo_icon").style.display = 'none';
       trickleCheckbox = document.getElementById("toggleTrickleIce");
 
       initialize();
@@ -132,6 +135,63 @@
 
         document.getElementById("call_btn")
         .addEventListener("click", onCallButtonPressed);
+
+        var mute = document.getElementById('mute');
+        mute.onclick = function(){
+        if(localStream !== null)
+          if(localStream.getAudioTracks()[0].enabled){
+            localStream.getAudioTracks()[0].enabled = false;
+            document.getElementById("mute_icon").style.color = 'black';
+            console.log("Audio muted");
+          }
+          else{
+            localStream.getAudioTracks()[0].enabled = true;
+            document.getElementById("mute_icon").style.color = 'red';
+            console.log("Audio un-muted");
+          }
+
+        if(local_audio_MST !== null){
+          if(local_audio_MST.enabled == false){
+            local_audio_MST.enabled = true;
+            document.getElementById("mute_icon").style.color = 'red';
+            console.log("Audio un-muted");
+          }
+          else{
+            local_audio_MST.enabled = false;
+            document.getElementById("mute_icon").style.color = 'black';
+            console.log("Audio muted");
+          }
+        }
+        };
+
+
+        var muteVideo = document.getElementById('muteVideo');
+        muteVideo.onclick = function(){
+        if(localStream !== null)
+          if(localStream.getVideoTracks()[0].enabled){
+            localStream.getVideoTracks()[0].enabled = false;
+            document.getElementById("muteVideo_icon").style.color = 'black';
+            console.log("Video muted");
+          }
+          else{
+            localStream.getVideoTracks()[0].enabled = true;
+            document.getElementById("muteVideo_icon").style.color = 'red';
+            console.log("Video un-muted");
+          }
+
+        if(local_video_MST !== null){
+          if(local_video_MST.enabled == false){
+            local_video_MST.enabled = true;
+            document.getElementById("muteVideo_icon").style.color = 'red';
+            console.log("Video un-muted");
+          }
+          else{
+            local_video_MST.enabled = false;
+            document.getElementById("muteVideo_icon").style.color = 'black';
+            console.log("Video muted");
+          }
+        }
+        };
 
           var ul = document.getElementById("contactList");
           ul.onclick = function (event) {
@@ -374,10 +434,13 @@
     else {
       peerInfo.id = selectedContactId
       peerInfo.friendlyName = selectedContactName;
-      signalMessage(JSON.stringify({
-        connectrequest: "connectrequest",
-        peerId: peerInfo.id
-      }));
+      if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) != false && checkIfORTC)
+        signalMessage(JSON.stringify({
+          connectrequest: "connectrequest",
+          peerId: peerInfo.id
+        }));
+      else
+        getMedia();
     }
   }
 
@@ -402,10 +465,14 @@
   function updateCallStatus(on) {
       if (on) {
           document.getElementById("call_btn").value = "Call";
+          document.getElementById("mute_icon").style.display = 'none';
+          document.getElementById("muteVideo_icon").style.display = 'none';
           isBusy = false;
       }
       else {
           document.getElementById("call_btn").value = "End Call";
+          document.getElementById("mute_icon").style.display = 'block';
+          document.getElementById("muteVideo_icon").style.display = 'block';
           isBusy = true;
           document.body.style.cursor = "progress";
       }
@@ -458,18 +525,18 @@
   function startWebRTC() {
     pc = new RTCPeerConnection(configuration);
 
-
     if(trickleCheckbox.checked)
       trickleIce = true;
     else
       trickleIce = false;
 
     pc.onicegatheringstatechange = function() {
-
+      console.warn("Ice gathering state changed: "+pc.iceGatheringState);
         if(pc.iceGatheringState === 'complete' && !trickleIce){
-          signalMessage(JSON.stringify({
-            "sdp": pc.localDescription
-          }))
+console.warn(trickleIce);
+            signalMessage(JSON.stringify({
+              "sdp": pc.localDescription
+            }))
         }
     }
 
@@ -543,7 +610,7 @@
     if(trickleIce){
         pc.onicecandidate = function (evt) {
             signalMessage(JSON.stringify({
-              "candidate": evt.candidate
+              "candidateSDP": evt.candidate
             }));
         };
     }
@@ -1026,7 +1093,7 @@
 
       if (!pc && checkIfWebRTC)
           startWebRTC();
-
+console.warn("PEER ID: "+peerInfo.id);
       var message = JSON.parse(evt.data);
 
       console.log(JSON.stringify(message));
@@ -1153,16 +1220,16 @@
       }
 
     //when resceiving candidates from WebRTC
-    if(message.candidate && (!iceTr || !dtlsTr)){
+    if(message.DirectCandidate && (!iceTr || !dtlsTr)){
       //fixes DOMException: Error processing ICE candidate
       //by only setting candidates when remoteDescription is not set
       if(pc.remoteDescription && pc.remoteDescription.type){
-          console.log("Remote SDP candidate:\n"+JSON.stringify(message.candidate));
-          pc.addIceCandidate(new RTCIceCandidate(message.candidate));           
+          console.log("Remote SDP candidate:\n"+JSON.stringify(message.DirectCandidate));
+          pc.addIceCandidate(new RTCIceCandidate(message.DirectCandidate));           
       }
         else{
           console.log("Ice candidate postponed!");
-          earlyCandidates.push(message.candidate);
+          earlyCandidates.push(message.DirectCandidate);
         }
          
     }
@@ -1189,6 +1256,33 @@
 
           }, logError);
     }
+
+    if(message.DirectSDP){
+      peerInfo = message.DirectSDP.peerInfo;
+      console.warn(peerInfo.id);
+
+      //set remote description after getting offer or answer from the other peer
+      pc.setRemoteDescription(message.DirectSDP, function () {
+
+        if(earlyCandidates.length>0){
+          earlyCandidates.forEach( function(candidate) {
+            pc.addIceCandidate(new RTCIceCandidate(candidate));
+            console.log("Postponed ice candidate added.");
+          });
+        }
+        else{
+          console.log("No early ice candidates to add.")
+        }
+
+        // if we received an offer, we need set up the stream to send the answer
+        if (pc.remoteDescription.type == "offer"){
+              getMedia();
+            }
+
+          }, logError);
+
+    }
+
 
       if (iceTr && dtlsTr) {
           if (message.candidate) {

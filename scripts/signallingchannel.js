@@ -545,7 +545,7 @@
         }
         else if (e.sdp) {
             console.log('RECV: direct sdp');
-            dispatchMessage(JSON.stringify({ DirectSDP: { 
+            dispatchMessage(JSON.stringify({ SDP: { 
                 "peerInfo":{"id":pragmaId},
                 "type": e.type,
                 "sdp": e.sdp }}));

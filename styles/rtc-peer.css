@@ -126,7 +126,10 @@ input#mute {
 input#muteVideo {
   display: none;
 }
-
+#stateChange {
+  display: flex;
+  margin-bottom: 20px;
+}
 #muteVideo_icon {
   color: red;
 }

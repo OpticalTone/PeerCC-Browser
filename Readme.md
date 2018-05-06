@@ -34,10 +34,18 @@ To run localy you will need *Visual Studio 2015* or newer.
 
 ### How to use
 
-1. (Optional) Chose your name
-2. (Optional) Uncheck the trickle ice checkbox if you want to send candidates trough sdp only (Only works with WebRtc)
-3. Connect to the server using the connect button.
-4. Select the peer that you wish to make a video call with and click the call button to initiate the connection.
+1. Connect to the server using the connect button.
+2. When you connect, contacts sidebar will show up that shows other users currently connected to the server (it can be hidden and shown by clicking the contact button next to the sidebar).
+3. Select the contact you wish to make a call with, and click the green phone icon to initiate the call.
+4. You can now mute and unmute audio and video with the buttons next to the phone icon.
+5. When you wish to end the call click the red phone icon.
+6. Click the disconnect button to disconnect from the server before exiting.
 
+
+### Options
+
+By clicking the cogs button on the right side, you can show and hide the options.
+While disconnected from the server, you can change the name, uncheck the trickle ice checkbox if you want to send candidates trough sdp only (Only works with WebRtc).
+While not in a call, you can chose the resolution you want your video to be displayed at.
 
 

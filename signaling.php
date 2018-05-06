@@ -1,6 +1,8 @@
 <?php 
 /* This is a simple php proxy server made to compensate 
    for signaling servers lack of support for the https requests */
+header("Access-Control-Allow-Origin: *");
+
 $allowURL = array('peercc-server.ortclib.org');
 if($_GET['url']){
 $url = urldecode($_GET['url']);

@@ -3,7 +3,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <link rel="stylesheet" href="https://edgeportal.blob.core.windows.net/media/demotemplate.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro.min.css">
   <link rel="stylesheet" href="/styles/rtc-peer.css" type="text/css" />
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,86 +16,104 @@
   <script src="/scripts/defineEventProperty.js"></script>
   <script src="/scripts/signallingchannel.js"></script>
   <script src="/scripts/RTC.js"></script>
+  <script src="/scripts/estetics.js"></script>
 </head>
 <body>
   <!-- DEMO -->
   <section id="demo" class="section">
-    <div class="container">
 
-      <div class="layout layout--sidebar">
-        <div class="module module--secondary">
-          <section id="videoPreview">
-            <h4 class="base strong">Video Preview</h4>
-            <div>
-              <video id="previewVideo" width="248" height="140" autoplay muted></video>
-            </div>
-          </section>
-          <section class="connect-form">
-            <div class="layout layout--halves">
-              <select id="resolution">
-                <option value="320x180">320 x 180</option>
-                <option value="320x240">320 x 240</option>
-                <option value="424x240">424 x 240</option>
-                <option value="640x360">640 x 360</option>
-                <option value="640x480" selected >640 x 480</option>
-                <option value="848x480">848 x 480</option>
-                <option value="960x540">960 x 540</option>
-                <option value="1280x720">1280 x 720</option>
-              </select>
-              <div id="stateChange">
-                <input type="checkbox" name="mute" id="mute">
-                <label for="mute" class="mute">
-                  <i class="fas fa-microphone" id="mute_icon"></i>
-                </label>
-                <input type="checkbox" name="muteVideo" id="muteVideo">
-                <label for="muteVideo" class="muteVideo">
-                  <i class="fas fa-video" id="muteVideo_icon"></i>
-                </label>
-              </div>
-              <div id="showName">
-                <h3>Your name: </h3>
-                <p id="name"></p>
-              </div>
-              <form action="" id="changeName" onsubmit="changeName()">
-                
-                <label for="toggleTrickleIce"><input type="checkbox" id="toggleTrickleIce" checked>  Trickle ICE</label>
-                <h3>Change name: </h3>
-                <input type="text" id = "changeValue">
-                <input type="submit" value="Change" class="button button--primary button--page-primary"> 
-                
-              </form>
-              
-              <h2>Contacts</h2>
-              <ul id="contactList">
-              </ul>
-            </div>
-            <div class="layout layout--halves">
-                <!-- server ip value  -->
-                <input id="peer-id" type="hidden" onclick="this.select();" value="peercc-server.ortclib.org"> 
-                <!-- server port value  -->
-                <input id="peer-key" type="hidden" onclick="this.select();" value="8888">
-            </div>
-            <input id="call_btn" class="button button--primary button--page-primary" type="button" value="Call" disabled>
-            <input id="connect_btn" class="button button--primary button--page-primary" type="button" value="Connect">
-          </section>
+    <div id="contacts" class="sidebar fadeOut">
+      <h2>Contacts</h2>
+      <ul id="contactList">
+      </ul>
+    </div>
+    <input id="toggle_contacts" name="toggle_contacts" value="toggle_contacts" type="button" onclick="toggleSidebar('contacts')">
+    <label for="toggle_contacts" id="toggle_contacts_label">
+      <i class="far fa-address-book"></i>
+    </label>
 
-          <!-- STATUS FOOTER -->
-          <section id="footer" class="ortc-status">
-            <div id="status">
-              <h4 class="ortc-status__title base strong">
-                <span>Status:</span>
-              </h4>
-              <p id="footer-status" class="ortc-status__description">Ready...</p>
-            </div>
-          </section>
-        </div>
-        <div id="connection" class="module module--primary">
-          <h4 class="base strong">Peer video</h4>
-          <div id="videoholder">
-            <video id="rtcRenderer" width="100%" height=500 autoplay></video>
+
+    <div id="options" class="sidebar fadeOut">  
+        <b>Select resolution: </b>
+        <select id="resolution">
+          <option value="320x180">320 x 180</option>
+          <option value="320x240">320 x 240</option>
+          <option value="424x240">424 x 240</option>
+          <option value="640x360">640 x 360</option>
+          <option value="640x480" selected >640 x 480</option>
+          <option value="848x480">848 x 480</option>
+          <option value="960x540">960 x 540</option>
+          <option value="1280x720">1280 x 720</option>
+        </select>    
+        <br>
+
+        <form action="" id="changeName" onsubmit="changeName()">
+          
+          <label for="toggleTrickleIce"><input type="checkbox" id="toggleTrickleIce" checked>  Trickle ICE</label>
+          <h3>Change name: </h3>
+          <input type="text" id = "changeValue">
+          <input type="submit" value="Change" class="button button--primary button--page-primary"> 
+          
+        </form>
+        <br><br>
+        
+        <section id="footer">
+          <div id="status">
+            <h4>
+              <span>Status:</span>
+            </h4>
+            <p id="footer-status">Ready...</p>
           </div>
+        </section>
+    </div>
+    <input id="toggle_options" name="toggle_options" value="toggle_options" type="button" onclick="toggleSidebar('options')">
+    <label for="toggle_options" id="toggle_options_label">
+      <i class="fas fa-cogs"></i>
+    </label>
+
+
+    <div class="container">
+      <div id="connect_wrap">
+        <div>
+        <input id="connect_btn" type="button" value="Connect">
         </div>
+        <div id="showName">
+          <h3>Your name: </h3>
+          <p id="name"></p>
+        </div>
+        <div></div>
       </div>
+
+      <section id="videoPreview">
+        <div>
+          <video id="previewVideo" width="248" height="140" autoplay muted></video>
+        </div>
+      </section>
+      <div id="videoholder">
+        <video id="rtcRenderer" width="100%" height="100%" autoplay></video>
+      </div>
+      <section class="connect-form">
+          <div id="stateChange">
+            <input id="call_btn" name="call_btn" type="button" value="Call" disabled>
+            <label for="call_btn" class="call_icon">
+              <i class="fas fa-phone" id="call_icon"></i>
+            </label>
+            <input type="checkbox" name="mute" id="mute">
+            <label for="mute" class="mute">
+              <i class="fas fa-microphone" id="mute_icon"></i>
+            </label>
+            <input type="checkbox" name="muteVideo" id="muteVideo">
+            <label for="muteVideo" class="muteVideo">
+              <i class="fas fa-video" id="muteVideo_icon"></i>
+            </label>
+          </div>
+        <div class="serverInfo">
+            <!-- server ip value  -->
+            <input id="peer-id" type="hidden" onclick="this.select();" value="peercc-server.ortclib.org"> 
+            <!-- server port value  -->
+            <input id="peer-key" type="hidden" onclick="this.select();" value="8888">
+        </div>
+      </section>
     </div>
   </section>
 

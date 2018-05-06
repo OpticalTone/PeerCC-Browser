@@ -232,7 +232,7 @@
 
     selectedResolution["height"] = selectedOption.substr(
         selectedOption.indexOf('x')+1, selectedOption.length);
-    
+
     mediaConstraints = { 
       "audio": true, 
       "video": {
@@ -273,6 +273,7 @@
       document.getElementById("changeName").style.display = "none";
 
       sigCh.start(info);
+      toggleSidebar('contacts',true);
     }
   }
 
@@ -281,6 +282,7 @@
       document.body.style.cursor = "progress";
       sigCh.close();
       document.getElementById("changeName").style.display = "initial";
+      toggleSidebar('contacts',false);
     }
   }
 
@@ -465,6 +467,7 @@
         startWebRTC();
       peerInfo.id = selectedContactId
       peerInfo.friendlyName = selectedContactName;
+      toggleSidebar('contacts',false);
       if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) != false && checkIfORTC)
         signalMessage(JSON.stringify({
           connectrequest: "connectrequest",
@@ -495,13 +498,13 @@
 
   function updateCallStatus(on) {
       if (on) {
-          document.getElementById("call_btn").value = "Call";
+          document.getElementsByClassName("call_icon")[0].style.color = "green";
           document.getElementById("mute_icon").style.display = 'none';
           document.getElementById("muteVideo_icon").style.display = 'none';
           isBusy = false;
       }
       else {
-          document.getElementById("call_btn").value = "End Call";
+          document.getElementsByClassName("call_icon")[0].style.color = "red";
           document.getElementById("mute_icon").style.display = 'block';
           document.getElementById("muteVideo_icon").style.display = 'block';
           isBusy = true;
@@ -1281,6 +1284,8 @@ console.warn("PEER ID: "+peerInfo.id);
         else{
           console.log("No early ice candidates to add.")
         }
+        
+        toggleSidebar('contacts',false);
 
         // if we received an offer, we need set up the stream to send the answer
         if (pc.remoteDescription.type == "offer"){

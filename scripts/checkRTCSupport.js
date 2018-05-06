@@ -62,17 +62,3 @@ else
     console.log("ORTC is NOT supported.\nWebRTC is NOT supported.");
 
 
-function changeName(){
-
-    var input = document.getElementById("changeValue").value;
-    
-    if (input != "") {
-        if ( /[^A-Za-z\d]/.test(input)) {
-            alert("Please enter only letter and numeric characters");
-            return false;
-        }
-    }
-
-    document.getElementById('name').innerHTML = input;
-    localStorage['name'] = input;
-}

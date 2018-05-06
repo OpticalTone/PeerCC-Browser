@@ -1,85 +1,38 @@
-.block-note--error p {
-	max-width: none;
-}
-.section{
-  margin: 0;
-}
-.strong {
-	font-weight: 600;
-}
-
 #previewVideo,
 #videoholder {
     background-color: #000;
+    border: #FFF solid 1px;
 }
-
-.connect-form,
-.ortc-status {
-	border-top: 1px solid #d2d2d2;
+#previewVideo{
+  z-index: 1;
+  position: absolute;
+  margin: 5px 5px 0 5px;
 }
-
-.modal {
-    background-color: rgba(0,0,0,.5);
+#videoholder{
+  height: 77vh;
 }
-
-.modal__footer button:only-child {
-	float: none;
-}
-
-.ortc-status__title,
-.ortc-status__description {
-	display: inline;
-}
-
-/* Styles for when layout is not stacked */
-@media (min-width: 48em) {
-	
-  .button 
-  {
-    width: 100%;
-  }
-
-}
-
-@media (min-width: 48em) and (max-width: 64em) {
-
-	.layout--sidebar > .module--secondary {
-		width: 28rem;
-	}
-
-	.layout--sidebar > .module--primary {
-		float: right;
-		width: calc(100% - 34rem);
-	}
-
-}
-
 h2 {
   font: 400 40px/1.5 Helvetica, Verdana, sans-serif;
   margin: 0;
   padding: 0;
 }
-
 ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
- 
 li {
   font: 200 20px/1.5 Helvetica, Verdana, sans-serif;
   border-bottom: 1px solid #ccc;
 }
- 
 li:last-child {
   border: none;
 }
- 
- 
 li a {
   text-decoration: none;
   display: block;
   width: 200px;
+  color: #e8736a;
  
   -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
   -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
@@ -87,21 +40,16 @@ li a {
   -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
   transition: font-size 0.3s ease, background-color 0.3s ease;
 }
-
-.contact a:focus{
-  color: LimeGreen;
-}
 #contactList{
   margin: 0 0 15px 0;
   border-bottom: 1px solid #ccc;
 }
 #showName{
   text-align: center;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
 }
 #showName>p{
-  margin: 10px;
+  margin-top: 10px;
   font-weight: bold;
   font-size: 20px;
 }
@@ -114,7 +62,100 @@ li a {
 label[for="toggleTrickleIce"] {
   font-size: 22px;
 }
+#connect_wrap{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#connect_wrap>*{
+  min-width: 30%;
+}
+#connect_btn{
+  background-color: #008CBA;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  height: 50px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+#resolution{
+  text-align: center;
+}
+.sidebar{
+  
+    position: fixed;
+    background-color: white;
+    border-width:5px;  
+    border-style:double;
+    border-color: gray;    
+    z-index: 2;
+    min-height: 100vh;
+    width: 200px;
+    padding: 5px;
+    overflow: auto;
 
+}
+.contact a:focus{
+  color: #6ceb74;
+}
+#toggle_contacts{
+  display: none;
+}
+#toggle_contacts_label{
+  position: fixed;
+  border-radius: 0 8px 8px 0;
+  background-color: white;
+  z-index: 2;
+}
+#toggle_contacts_label > *{
+  font-size: 2em;
+}
+#toggle_options{
+  display: none;
+}
+#toggle_options_label{
+  position: fixed;
+  right: 0px;
+  border-radius: 8px 0 0 8px;
+  background-color: white;
+  z-index: 2;
+}
+#toggle_options_label > *{
+  font-size: 2em;
+}
+#options{
+    right: 0;
+
+}
+.fadeOut {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 600ms, opacity 300ms;
+}
+.fadeIn {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 300ms;
+}
+.fas{
+  font-size: 40px;
+  margin: 10px;
+}
+#call_btn{
+  display: none;
+}
+input[type="button"]:disabled + .call_icon{
+  color: gray;
+}
+.call_icon{
+  color: green;
+}
 input#mute {
   display: none;
 }
@@ -128,8 +169,17 @@ input#muteVideo {
 }
 #stateChange {
   display: flex;
-  margin-bottom: 20px;
+  justify-content: center;
 }
 #muteVideo_icon {
   color: red;
 }
+@media only screen and (max-width: 600px) {
+  #connect_wrap > *{
+    min-width: 35%;
+  }
+  #showName{
+    min-width: 80%;
+  }
+}
+

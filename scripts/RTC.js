@@ -126,6 +126,9 @@
       document.getElementById("mute_icon").style.display = 'none';
       document.getElementById("muteVideo_icon").style.display = 'none';
       trickleCheckbox = document.getElementById("toggleTrickleIce");
+      if(!(checkIfORTC && checkIfWebRTC)){
+        document.getElementById("selectTechWrap").style.display = 'none';
+      }
 
       initialize();
   };
@@ -463,16 +466,19 @@
       alert("Please select contact before making call.");
     }
     else {
-      if(!pc)
+      if(!pc && checkIfWebRTC)
         startWebRTC();
       peerInfo.id = selectedContactId
       peerInfo.friendlyName = selectedContactName;
       toggleSidebar('contacts',false);
-      if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) != false && checkIfORTC)
+      if(checkPeerSupport(JSON.stringify(peerInfo.friendlyName)) != false 
+        && checkIfORTC
+        && document.getElementById("ORTC_selected").checked){
         signalMessage(JSON.stringify({
           connectrequest: "connectrequest",
           peerId: peerInfo.id
         }));
+      }
       else
         getMedia();
     }
@@ -539,6 +545,7 @@
           showMessage("Accepted Peer: " + message.connectrequest.peerInfo.id 
               + " connection request.");
 
+          toggleSidebar('contacts',false);
       }
   }
 
@@ -565,9 +572,7 @@
       trickleIce = false;
 
     pc.onicegatheringstatechange = function() {
-      console.warn("Ice gathering state changed: "+pc.iceGatheringState);
         if(pc.iceGatheringState === 'complete' && !trickleIce){
-console.warn(trickleIce);
             signalMessage(JSON.stringify({
               "sdp": pc.localDescription
             }))
@@ -1129,7 +1134,6 @@ console.warn(trickleIce);
 
       if (!pc && checkIfWebRTC)
           startWebRTC();
-console.warn("PEER ID: "+peerInfo.id);
       var message = JSON.parse(evt.data);
 
       console.log(JSON.stringify(message));
@@ -1270,34 +1274,8 @@ console.warn("PEER ID: "+peerInfo.id);
          
     }
 
-    if(message.sdp){
-      
-      //set remote description after getting offer or answer from the other peer
-      pc.setRemoteDescription(message.sdp, function () {
-
-        if(earlyCandidates.length>0){
-          earlyCandidates.forEach( function(candidate) {
-            pc.addIceCandidate(new RTCIceCandidate(candidate));
-            console.log("Postponed ice candidate added.");
-          });
-        }
-        else{
-          console.log("No early ice candidates to add.")
-        }
-        
-        toggleSidebar('contacts',false);
-
-        // if we received an offer, we need set up the stream to send the answer
-        if (pc.remoteDescription.type == "offer"){
-              getMedia();
-            }
-
-          }, logError);
-    }
-
     if(message.SDP){
       peerInfo = message.SDP.peerInfo;
-      console.warn(peerInfo.id);
 
       //set remote description after getting offer or answer from the other peer
       pc.setRemoteDescription(message.SDP, function () {
@@ -1318,6 +1296,7 @@ console.warn("PEER ID: "+peerInfo.id);
             }
 
           }, logError);
+        toggleSidebar('contacts',false);
 
     }
 

@@ -11,7 +11,6 @@
  *   See the Apache 2 License for the specific language governing permissions and limitations under the License.
  */
 
-
 (function (global) {
   "use strict";
 
@@ -607,7 +606,6 @@
     //add local stream to the video element.
     localStream = stream;
 
-
     //add local stream to the RTCPeerConnection
     localStream.getTracks().forEach(
       function(track) {
@@ -622,9 +620,6 @@
     videoPreview = document.getElementById("previewVideo");
     videoPreview.srcObject = localStream;
 
-
-
-
     if (pc.remoteDescription && pc.remoteDescription.type == "offer")
       pc.createAnswer({iceRestart: true}).then(localDescCreated, logError);
     else
@@ -632,9 +627,9 @@
 
   }
 
-
   //function called upon successful creation of offer or answer
   function localDescCreated(desc) {
+    desc = changeSdpCodec(desc);
 
     pc.setLocalDescription( 
       new RTCSessionDescription(desc),
@@ -661,6 +656,129 @@
 
 
   }
+
+  function changeSdpCodec(SDP){
+
+    //Convert sdp into array
+    let sdpArr = SDP.sdp.split("\r\n");
+
+    let audioCodecIndex;
+    let videoCodecIndex;
+    sdpArr.forEach(function(element, index){
+
+      //get index of line with audio and video codecs order in sdp(array)
+      if(element.includes("m=audio"))
+        audioCodecIndex=index; 
+
+      if(element.includes("m=video"))
+        videoCodecIndex=index; 
+
+    });
+    
+    let audioCodec = document.getElementById("audioCodec");
+    let selectedAudioCodec = audioCodec.options[audioCodec.selectedIndex].value;
+
+    //get the order of audio codecs
+    let audioCodecOrder = sdpArr[audioCodecIndex].substring( 
+      sdpArr[audioCodecIndex].indexOf("UDP/TLS/RTP/SAVPF")+18, 
+      sdpArr[audioCodecIndex].length);
+
+    audioCodecOrder = audioCodecOrder.split(" ");
+
+    let audioCodecList = [];
+
+    //get the list of codecs from sdp by comparing every elemend 
+    //of sdp array with every element of the audioCodecOrder array
+    sdpArr.forEach( function(element) {
+      audioCodecOrder.forEach( function(codecNo) {
+        //check if the sdp array's element contains 
+        //rtpmap with the code of the audio codec code from audioCodecOrder
+        if(element.includes("a=rtpmap:"+codecNo)){
+          //get the name of the codec from the line 
+          //containing the rtpmap and element of audioCodecOrder
+          let codecName=element.substring(element.indexOf(" ")+1,element.indexOf("/")); 
+          //make a 2d array with codec names and for each name make an array of their codes
+          if(audioCodecList[codecName])
+            audioCodecList[codecName].push(codecNo);
+          else
+            audioCodecList[codecName] = [codecNo];
+        }
+      });
+    });
+    audioCodecOrder = " "+audioCodecOrder.join(" ");
+
+    //change order of codecs from the selected if the selected codec is supported
+    for(let key in audioCodecList){
+      if(key == selectedAudioCodec){
+        audioCodecList[key].forEach( function(codeElement, codeIndex) {
+          audioCodecOrder = audioCodecOrder.replace(codeElement+" ", "");
+          audioCodecOrder = " " + codeElement + audioCodecOrder;
+        });
+      }
+    }
+
+    //make the codec order element of the sdp array to contain the new codec order
+    sdpArr[audioCodecIndex] = sdpArr[audioCodecIndex].substring( 0, 
+      sdpArr[audioCodecIndex].indexOf("UDP/TLS/RTP/SAVPF")+17)
+      +audioCodecOrder;
+
+
+    let videoCodec = document.getElementById("videoCodec");
+    let selectedVideoCodec = videoCodec.options[videoCodec.selectedIndex].value;
+
+    //get the order of video codecs
+    let videoCodecOrder = sdpArr[videoCodecIndex].substring( 
+      sdpArr[videoCodecIndex].indexOf("UDP/TLS/RTP/SAVPF")+18, 
+      sdpArr[videoCodecIndex].length);
+
+    videoCodecOrder = videoCodecOrder.split(" ");
+
+    let videoCodecList = [];
+
+    //get the list of codecs from sdp by comparing every elemend 
+    //of sdp array with every element of the videoCodecOrder array
+    sdpArr.forEach( function(element, index) {
+      videoCodecOrder.forEach( function(codecNo) {
+        //check if the sdp array's element contains 
+        //rtpmap with the code of the video codec code from videoCodecOrder
+        if(element.includes("a=rtpmap:"+codecNo)){
+          //get the name of the codec from the line 
+          //containing the rtpmap and element of videoCodecOrder
+          let codecName=element.substring(element.indexOf(" ")+1,element.indexOf("/")); 
+          //make a 2d array with codec names and for each name make an array of their codes
+          if(videoCodecList[codecName])
+            videoCodecList[codecName].push(codecNo);
+          else
+            videoCodecList[codecName] = [codecNo];
+        }
+      });
+    });
+    videoCodecOrder = " "+videoCodecOrder.join(" ");
+
+    //change order of codecs from the selected if the selected codec is supported
+    for(let key in videoCodecList){
+      if(key == selectedVideoCodec){
+        videoCodecList[key].forEach( function(codeElement, codeIndex) {
+          videoCodecOrder = videoCodecOrder.replace(codeElement+" ", "");
+          videoCodecOrder = " " + codeElement + videoCodecOrder;
+        });
+      }
+    }
+
+    //make the codec order element of the sdp array to contain the new codec order
+    sdpArr[videoCodecIndex] = sdpArr[videoCodecIndex].substring( 0, 
+      sdpArr[videoCodecIndex].indexOf("UDP/TLS/RTP/SAVPF")+17)
+      +videoCodecOrder;
+
+    //return sdp array back into sdp
+    sdpArr = sdpArr.join("\r\n");
+
+    SDP.sdp = sdpArr;
+
+    return SDP;
+
+  }
+
 
 /*=====  End of Webrtc part  ======*/
 

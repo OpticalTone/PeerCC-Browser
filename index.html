@@ -47,6 +47,24 @@
         </select>    
         <br>
 
+        <b>Select audio codec: </b>
+        <select id="audioCodec">
+          <option value="opus">opus</option>
+          <option value="ISAC">ISAC</option>
+          <option value="G722">G722</option>
+          <option value="PCMU">PCMU</option>
+          <option value="PCMA">PCMA</option>
+        </select>    
+        <br>
+
+        <b>Select video codec: </b>
+        <select id="videoCodec">
+          <option value="VP8">VP8</option>
+          <option value="VP9">VP9</option>
+          <option value="H264">H264</option>
+        </select>    
+        <br>
+
         <form action="" id="changeName" onsubmit="changeName()">
           
           <label for="toggleTrickleIce"><input type="checkbox" id="toggleTrickleIce" checked>  Trickle ICE</label>

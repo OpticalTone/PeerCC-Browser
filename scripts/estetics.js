@@ -36,18 +36,27 @@ function toggleSidebar(sidebarId, show){
     if(sidebar.classList.contains("fadeIn")){
         sidebar.classList.remove("fadeIn");
         sidebar.classList.add("fadeOut");
-        if(alignment == "right")
+        if(alignment == "right"){
             label.style.right = "0px";
-        else
+            sidebar.style.right = "-2000px";
+        }
+        else{
             label.style.left = "0px";
+            sidebar.style.left = "-2000px";
+        }
 
     }
     else{
         sidebar.classList.remove("fadeOut");
         sidebar.classList.add("fadeIn");
-        if(alignment == "right")
+        if(alignment == "right"){
             label.style.right = "200px";
-        else
+            sidebar.style.right = "-200px";
+        }
+        else{
             label.style.left = "200px";
+            sidebar.style.left = "200px";
+        }
+
     }
 }

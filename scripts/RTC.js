@@ -49,6 +49,8 @@
   var remote_videoSendParams = null;
   var local_video_MST = null;
   var local_audio_MST = null;
+  var supportedAudioCodecs = new Array();
+  var supportedVideoCodecs = new Array();
 
   var allowBundle = true;
   var iceGathr_2 = null;
@@ -65,6 +67,8 @@
 
   var selectedContactName = null;
   var selectedContactId = null;
+  var selectedAudioCodec = null;
+  var selectedVideoCodec = null;
 
   var trickleIce = true;
   var trickleCheckbox;
@@ -135,6 +139,8 @@
 
   function initialize() {
     try {
+      browserCodecs();
+
       document.getElementById("connect_btn")
       .addEventListener("click", onConnectButtonPressed);
 
@@ -223,6 +229,7 @@
         showMessage(e.message || e, true);
     }
   }
+
 
   function updateMediaConstraints(){
 
@@ -629,15 +636,28 @@
 
   //function called upon successful creation of offer or answer
   function localDescCreated(desc) {
-    desc = changeSdpCodec(desc);
+    getSelectedCodecs();
+
+    if(selectedAudioCodec != "Default" || selectedVideoCodec != "Default"){
+        desc = changeSdpCodec(desc);
+          
+    }
 
     pc.setLocalDescription( 
-      new RTCSessionDescription(desc),
+      desc,
       function(){
-        if(trickleIce)
-        signalMessage(JSON.stringify({
-              "sdp": pc.localDescription
-            }))
+        if(trickleIce){
+          // if(selectedAudioCodec != "Default" || selectedVideoCodec != "Default"){
+          //   signalMessage(JSON.stringify({
+          //         "sdp": changeSdpCodec(desc)
+          //       }))
+          // }
+          // else {
+            signalMessage(JSON.stringify({
+                  "sdp": desc
+                }))
+          // }
+        }
       },logError
     );
     
@@ -655,6 +675,78 @@
       };
 
 
+  }
+
+  function getSelectedCodecs(){
+    selectedAudioCodec = audioCodec.options[audioCodec.selectedIndex].value;
+    selectedVideoCodec = videoCodec.options[videoCodec.selectedIndex].value;
+  }
+
+  function browserCodecs() { 
+      supportedAudioCodecs.push("Default");
+      supportedVideoCodecs.push("Default");
+    if(window.navigator.userAgent.indexOf("Edge") > -1)
+    {
+      supportedAudioCodecs.push("opus/48000/2");
+      supportedAudioCodecs.push("SILK/16000");
+      supportedAudioCodecs.push("SILK/8000");
+      supportedAudioCodecs.push("PCMU/8000");
+      supportedAudioCodecs.push("PCMA/8000");
+
+      supportedVideoCodecs.push("X-H264UC/90000");
+      supportedVideoCodecs.push("H264/90000");
+      supportedVideoCodecs.push("VP8/90000");
+    }  
+    else if(navigator.userAgent.indexOf("Chrome") > -1 || navigator.userAgent.indexOf('OPR') != -1 )
+    {
+      supportedAudioCodecs.push("opus/48000/2");
+      supportedAudioCodecs.push("ISAC/16000");
+      supportedAudioCodecs.push("ISAC/32000");
+      supportedAudioCodecs.push("G722/8000");
+      supportedAudioCodecs.push("PCMU/8000");
+      supportedAudioCodecs.push("PCMA/8000");
+      
+      supportedVideoCodecs.push("H264/90000");
+      supportedVideoCodecs.push("VP9/90000");
+      supportedVideoCodecs.push("VP8/90000");
+    }
+    else if(navigator.userAgent.indexOf("Firefox") > -1 ) 
+    {
+      supportedAudioCodecs.push("opus/48000/2");
+      supportedAudioCodecs.push("G722/8000"); 
+      supportedAudioCodecs.push("PCMU/8000");
+      supportedAudioCodecs.push("PCMA/8000");
+      
+      supportedVideoCodecs.push("H264/90000");
+      supportedVideoCodecs.push("VP9/90000");
+      supportedVideoCodecs.push("VP8/90000");
+    }
+    let selectAudioCodec = document.getElementById("audioCodec");
+    supportedAudioCodecs.forEach( function(codecName) {
+      let option = document.createElement("option");
+      option.text=codecName;
+      option.value=codecName;
+      selectAudioCodec.add(option);
+    });
+
+    let selectVideoCodec = document.getElementById("videoCodec");
+    supportedVideoCodecs.forEach( function(codecName) {
+      let option = document.createElement("option");
+      option.text=codecName;
+      option.value=codecName;
+      selectVideoCodec.add(option);
+    });
+  }
+
+  //clear blank elements from array
+  function cleanArray(sourceArr) {
+    var newArray = new Array();
+    for (var i = 0; i < sourceArr.length; i++) {
+      if (sourceArr[i]) {
+        newArray.push(sourceArr[i]);
+      }
+    }
+    return newArray;
   }
 
   function changeSdpCodec(SDP){
@@ -676,9 +768,8 @@
     });
     
     let audioCodec = document.getElementById("audioCodec");
-    let selectedAudioCodec = audioCodec.options[audioCodec.selectedIndex].value;
 
-    //get the order of audio codecs
+    //get the order of audio codecs from the m=audio line in sdp
     let audioCodecOrder = sdpArr[audioCodecIndex].substring( 
       sdpArr[audioCodecIndex].indexOf("UDP/TLS/RTP/SAVPF")+18, 
       sdpArr[audioCodecIndex].length);
@@ -689,20 +780,23 @@
 
     //get the list of codecs from sdp by comparing every elemend 
     //of sdp array with every element of the audioCodecOrder array
-    sdpArr.forEach( function(element) {
-      audioCodecOrder.forEach( function(codecNo) {
-        //check if the sdp array's element contains 
-        //rtpmap with the code of the audio codec code from audioCodecOrder
-        if(element.includes("a=rtpmap:"+codecNo)){
-          //get the name of the codec from the line 
-          //containing the rtpmap and element of audioCodecOrder
-          let codecName=element.substring(element.indexOf(" ")+1,element.indexOf("/")); 
-          //make a 2d array with codec names and for each name make an array of their codes
-          if(audioCodecList[codecName])
-            audioCodecList[codecName].push(codecNo);
+    sdpArr.forEach( function(element, index) {
+      audioCodecOrder.forEach( function(codecNo, codecNoIndex) {
+        supportedAudioCodecs.forEach( function(supportedCodec) {
+
+
+        if(element.includes("a=rtpmap:"+codecNo) && codecNo){
+          let codecName=element.substring(element.indexOf(" ")+1); 
+
+          if(supportedCodec == codecName && codecName)
+          if(audioCodecList[supportedCodec])
+            audioCodecList[supportedCodec].push(codecNo);
           else
-            audioCodecList[codecName] = [codecNo];
+            audioCodecList[supportedCodec] = [codecNo];
         }
+
+
+        });
       });
     });
     audioCodecOrder = " "+audioCodecOrder.join(" ");
@@ -717,20 +811,18 @@
       }
     }
 
-    //make the codec order element of the sdp array to contain the new codec order
+    //replace the initial order of codecs with the new one in m=audio line in sdp
     sdpArr[audioCodecIndex] = sdpArr[audioCodecIndex].substring( 0, 
       sdpArr[audioCodecIndex].indexOf("UDP/TLS/RTP/SAVPF")+17)
       +audioCodecOrder;
 
 
     let videoCodec = document.getElementById("videoCodec");
-    let selectedVideoCodec = videoCodec.options[videoCodec.selectedIndex].value;
 
-    //get the order of video codecs
+    //get the order of video codecs from the m=video line in sdp
     let videoCodecOrder = sdpArr[videoCodecIndex].substring( 
       sdpArr[videoCodecIndex].indexOf("UDP/TLS/RTP/SAVPF")+18, 
       sdpArr[videoCodecIndex].length);
-
     videoCodecOrder = videoCodecOrder.split(" ");
 
     let videoCodecList = [];
@@ -738,24 +830,27 @@
     //get the list of codecs from sdp by comparing every elemend 
     //of sdp array with every element of the videoCodecOrder array
     sdpArr.forEach( function(element, index) {
-      videoCodecOrder.forEach( function(codecNo) {
-        //check if the sdp array's element contains 
-        //rtpmap with the code of the video codec code from videoCodecOrder
-        if(element.includes("a=rtpmap:"+codecNo)){
-          //get the name of the codec from the line 
-          //containing the rtpmap and element of videoCodecOrder
-          let codecName=element.substring(element.indexOf(" ")+1,element.indexOf("/")); 
-          //make a 2d array with codec names and for each name make an array of their codes
-          if(videoCodecList[codecName])
-            videoCodecList[codecName].push(codecNo);
+      videoCodecOrder.forEach( function(codecNo, codecNoIndex) {
+        supportedVideoCodecs.forEach( function(supportedCodec) {
+
+
+        if(element.includes("a=rtpmap:"+codecNo) && codecNo){
+          let codecName=element.substring(element.indexOf(" ")+1); 
+
+          if(supportedCodec == codecName && codecName)
+          if(videoCodecList[supportedCodec])
+            videoCodecList[supportedCodec].push(codecNo);
           else
-            videoCodecList[codecName] = [codecNo];
+            videoCodecList[supportedCodec] = [codecNo];
         }
+
+
+        });
       });
     });
     videoCodecOrder = " "+videoCodecOrder.join(" ");
 
-    //change order of codecs from the selected if the selected codec is supported
+    //change order of codecs if the selected codec is supported
     for(let key in videoCodecList){
       if(key == selectedVideoCodec){
         videoCodecList[key].forEach( function(codeElement, codeIndex) {
@@ -765,13 +860,13 @@
       }
     }
 
-    //make the codec order element of the sdp array to contain the new codec order
+    //replace the initial order of codecs with the new one in m=video line in sdp
     sdpArr[videoCodecIndex] = sdpArr[videoCodecIndex].substring( 0, 
       sdpArr[videoCodecIndex].indexOf("UDP/TLS/RTP/SAVPF")+17)
       +videoCodecOrder;
 
-    //return sdp array back into sdp
-    sdpArr = sdpArr.join("\r\n");
+    sdpArr = cleanArray(sdpArr);
+    sdpArr = sdpArr.join("\r\n")+"\r\n";
 
     SDP.sdp = sdpArr;
 
@@ -1393,6 +1488,12 @@
     }
 
     if(message.SDP){
+      getSelectedCodecs();
+
+      if(selectedAudioCodec != "Default" || selectedVideoCodec != "Default"){
+        message.SDP = changeSdpCodec(message.SDP);
+      }
+
       peerInfo = message.SDP.peerInfo;
 
       //set remote description after getting offer or answer from the other peer

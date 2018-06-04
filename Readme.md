@@ -48,5 +48,6 @@ By clicking the cogs button on the right side, you can show and hide the options
 While disconnected from the server, you can change the name, uncheck the trickle ice checkbox if you want to send candidates trough sdp only (Only works with WebRtc).
 While not in a call, you can chose the resolution you want your video to be displayed at.
 You can chose to use either ORTC or WebRTC on browsers that support both technologies.
+You can chose video and audio codecs, if "Default" is selected codecs will not be changed.
 
 

@@ -413,7 +413,8 @@
         peerConnectionServer= "https://www.webrtcpeer.com/signaling.php?url="+url;
       }
       else
-        peerConnectionServer = "http://" + info.address + ":" + info.port;
+        peerConnectionServer = "http://" + "192.168.1.13" + ":" + info.port;
+        // peerConnectionServer = "http://" + info.address + ":" + info.port;
 
 
       aClient.get(peerConnectionServer + signInMethod + name, function (header, response) {

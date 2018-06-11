@@ -150,62 +150,7 @@
       document.getElementById("resolution")
       .addEventListener("change", updateMediaConstraints);
 
-      let mute = document.getElementById('mute');
-      mute.onclick = function(){
-      if(localStream !== null)
-        if(localStream.getAudioTracks()[0].enabled){
-          localStream.getAudioTracks()[0].enabled = false;
-          document.getElementById("mute_icon").style.color = 'black';
-          console.log("Audio muted");
-        }
-        else{
-          localStream.getAudioTracks()[0].enabled = true;
-          document.getElementById("mute_icon").style.color = 'red';
-          console.log("Audio un-muted");
-        }
-
-      if(local_audio_MST !== null){
-        if(local_audio_MST.enabled == false){
-          local_audio_MST.enabled = true;
-          document.getElementById("mute_icon").style.color = 'red';
-          console.log("Audio un-muted");
-        }
-        else{
-          local_audio_MST.enabled = false;
-          document.getElementById("mute_icon").style.color = 'black';
-          console.log("Audio muted");
-        }
-      }
-      };
-
-
-      let muteVideo = document.getElementById('muteVideo');
-      muteVideo.onclick = function(){
-      if(localStream !== null)
-        if(localStream.getVideoTracks()[0].enabled){
-          localStream.getVideoTracks()[0].enabled = false;
-          document.getElementById("muteVideo_icon").style.color = 'black';
-          console.log("Video muted");
-        }
-        else{
-          localStream.getVideoTracks()[0].enabled = true;
-          document.getElementById("muteVideo_icon").style.color = 'red';
-          console.log("Video un-muted");
-        }
-
-      if(local_video_MST !== null){
-        if(local_video_MST.enabled == false){
-          local_video_MST.enabled = true;
-          document.getElementById("muteVideo_icon").style.color = 'red';
-          console.log("Video un-muted");
-        }
-        else{
-          local_video_MST.enabled = false;
-          document.getElementById("muteVideo_icon").style.color = 'black';
-          console.log("Video muted");
-        }
-      }
-      };
+      muteTracks();
 
       var ul = document.getElementById("contactList");
       ul.onclick = function (event) {
@@ -230,6 +175,64 @@
     }
   }
 
+  function muteTracks(){
+    let muteAudio = document.getElementById('mute');
+    muteAudio.onclick = function(){
+    if(localStream !== null)
+      if(localStream.getAudioTracks()[0].enabled){
+        localStream.getAudioTracks()[0].enabled = false;
+        document.getElementById("mute_icon").style.color = 'black';
+        console.log("Audio muted");
+      }
+      else{
+        localStream.getAudioTracks()[0].enabled = true;
+        document.getElementById("mute_icon").style.color = 'red';
+        console.log("Audio un-muted");
+      }
+
+    if(local_audio_MST !== null){
+      if(local_audio_MST.enabled == false){
+        local_audio_MST.enabled = true;
+        document.getElementById("mute_icon").style.color = 'red';
+        console.log("Audio un-muted");
+      }
+      else{
+        local_audio_MST.enabled = false;
+        document.getElementById("mute_icon").style.color = 'black';
+        console.log("Audio muted");
+      }
+    }
+    };
+
+
+    let muteVideo = document.getElementById('muteVideo');
+    muteVideo.onclick = function(){
+    if(localStream !== null)
+      if(localStream.getVideoTracks()[0].enabled){
+        localStream.getVideoTracks()[0].enabled = false;
+        document.getElementById("muteVideo_icon").style.color = 'black';
+        console.log("Video muted");
+      }
+      else{
+        localStream.getVideoTracks()[0].enabled = true;
+        document.getElementById("muteVideo_icon").style.color = 'red';
+        console.log("Video un-muted");
+      }
+
+    if(local_video_MST !== null){
+      if(local_video_MST.enabled == false){
+        local_video_MST.enabled = true;
+        document.getElementById("muteVideo_icon").style.color = 'red';
+        console.log("Video un-muted");
+      }
+      else{
+        local_video_MST.enabled = false;
+        document.getElementById("muteVideo_icon").style.color = 'black';
+        console.log("Video muted");
+      }
+    }
+    };
+  }
 
   function updateMediaConstraints(){
 
@@ -247,9 +250,7 @@
       "video": {
         width: { max: selectedResolution["width"] },
         height: { max: selectedResolution["height"] }
-      }
-
-      
+      }      
     }
 
     console.log("Media constraints changed.");
@@ -387,15 +388,15 @@
       remote_videoSendParams = null;
 
       if(previewStream){
-          previewStream = null;
+        previewStream = null;
       }
       if(local_video_MST) {
-          local_video_MST.stop();
-          local_video_MST = null; 
+        local_video_MST.stop();
+        local_video_MST = null; 
       }
       if(local_audio_MST) {
-          local_audio_MST.stop();
-          local_audio_MST = null; 
+        local_audio_MST.stop();
+        local_audio_MST = null; 
       }
       trackCount = 0;
 
@@ -411,12 +412,12 @@
         videoPreview = null;
       }
       if (localStream) {
-      localStream.getTracks().forEach(track => track.stop());
-      localStream = null; 
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null; 
       }
       if (renderStream) {
-      renderStream.getTracks().forEach(track => track.stop());
-      renderStream = null; 
+        renderStream.getTracks().forEach(track => track.stop());
+        renderStream = null; 
       }
   
 
@@ -434,8 +435,8 @@
   function updateSelfInformation(details) {
 
       if (details.id) {
-          selfInfo.id = details.id;
-          selfInfo.friendlyName = details.friendlyName;
+        selfInfo.id = details.id;
+        selfInfo.friendlyName = details.friendlyName;
       }
 
   }
@@ -501,26 +502,26 @@
 
   function signalMessage(msg) {
       if (sigCh) {
-          msg = JSON.parse(msg);
-          msg.selfInfo = selfInfo;
-          msg.peerInfo = peerInfo;
-          sigCh.send(JSON.stringify(msg));
+        msg = JSON.parse(msg);
+        msg.selfInfo = selfInfo;
+        msg.peerInfo = peerInfo;
+        sigCh.send(JSON.stringify(msg));
       }
   }
 
   function updateCallStatus(on) {
       if (on) {
-          document.getElementsByClassName("call_icon")[0].style.color = "green";
-          document.getElementById("mute_icon").style.display = 'none';
-          document.getElementById("muteVideo_icon").style.display = 'none';
-          isBusy = false;
+        document.getElementsByClassName("call_icon")[0].style.color = "green";
+        document.getElementById("mute_icon").style.display = 'none';
+        document.getElementById("muteVideo_icon").style.display = 'none';
+        isBusy = false;
       }
       else {
-          document.getElementsByClassName("call_icon")[0].style.color = "red";
-          document.getElementById("mute_icon").style.display = 'block';
-          document.getElementById("muteVideo_icon").style.display = 'block';
-          isBusy = true;
-          document.body.style.cursor = "progress";
+        document.getElementsByClassName("call_icon")[0].style.color = "red";
+        document.getElementById("mute_icon").style.display = 'block';
+        document.getElementById("muteVideo_icon").style.display = 'block';
+        isBusy = true;
+        document.body.style.cursor = "progress";
       }
   }
 
@@ -529,29 +530,29 @@
           + " requested to connect.");
 
       if (isBusy) {
-          peerInfo = message.connectrequest.peerInfo;
+        peerInfo = message.connectrequest.peerInfo;
 
-          // reject
-          signalMessage(JSON.stringify({
-              "connectresponse": "reject"
-          }));
+        // reject
+        signalMessage(JSON.stringify({
+            "connectresponse": "reject"
+        }));
 
-          peerInfo = {};
-          showMessage("Rejected Peer: " + message.connectrequest.peerInfo.id 
-              + " connection request.");
+        peerInfo = {};
+        showMessage("Rejected Peer: " + message.connectrequest.peerInfo.id 
+            + " connection request.");
       }
       else {
-          // accept
-          peerInfo = message.connectrequest.peerInfo;
+        // accept
+        peerInfo = message.connectrequest.peerInfo;
 
-          signalMessage(JSON.stringify({
-              "connectresponse": "accept"
-          }));
+        signalMessage(JSON.stringify({
+            "connectresponse": "accept"
+        }));
 
-          showMessage("Accepted Peer: " + message.connectrequest.peerInfo.id 
-              + " connection request.");
+        showMessage("Accepted Peer: " + message.connectrequest.peerInfo.id 
+            + " connection request.");
 
-          toggleSidebar('contacts',false);
+        toggleSidebar('contacts',false);
       }
   }
 
@@ -639,24 +640,16 @@
     getSelectedCodecs();
 
     if(selectedAudioCodec != "Default" || selectedVideoCodec != "Default"){
-        desc = changeSdpCodec(desc);
-          
+      desc = changeSdpCodec(desc);    
     }
 
     pc.setLocalDescription( 
       desc,
       function(){
         if(trickleIce){
-          // if(selectedAudioCodec != "Default" || selectedVideoCodec != "Default"){
-          //   signalMessage(JSON.stringify({
-          //         "sdp": changeSdpCodec(desc)
-          //       }))
-          // }
-          // else {
             signalMessage(JSON.stringify({
                   "sdp": desc
                 }))
-          // }
         }
       },logError
     );
@@ -1532,10 +1525,6 @@
               else {
                   iceTr.setRemoteCandidates(remoteCandidates); 
               }
-
-              // the alternative option is to call addRemoteCandidate 
-              //including the empty candidate
-              //iceTr.addRemoteCandidate(message.candidate);
 
           }
 

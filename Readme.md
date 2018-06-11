@@ -46,8 +46,8 @@ To run localy you will need *Visual Studio 2015* or newer.
 
 By clicking the cogs button on the right side, you can show and hide the options.
 While disconnected from the server, you can change the name, uncheck the trickle ice checkbox if you want to send candidates trough sdp only (Only works with WebRtc).
-While not in a call, you can chose the resolution you want your video to be displayed at.
-You can chose to use either ORTC or WebRTC on browsers that support both technologies.
-You can chose video and audio codecs, if "Default" is selected codecs will not be changed.
+While not in a call, you can choose the resolution you want your video to be displayed at.
+You can choose to use either ORTC or WebRTC on browsers that support both technologies.
+You can choose video and audio codecs, if "Default" is selected codecs will not be changed, codecs can't be chosen after the call has already been made.
 
 

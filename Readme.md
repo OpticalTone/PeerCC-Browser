@@ -27,7 +27,7 @@ To run localy you will need *Visual Studio 2015* or newer.
 
 1. Open the project as Web Site in Visual Studio (File->Open->Web Site...)
 2. Select the project folder (PeerCC-Browser) and click Open
-3. If you want to run localy you set the **live** variable to **false** (*scripts/signallingchannel.js line:19*)
+3. If you want to run localy you set the **proxy** variable to **false** (*js/signallingchannel.js line:4*)
 4. Select the browser you wish to use and run the project
 5. Use browser console to debug
 
@@ -45,6 +45,7 @@ To run localy you will need *Visual Studio 2015* or newer.
 ### Options
 
 By clicking the cogs button on the right side, you can show and hide the options.
+Server address and server port are used to connect to the signaling server
 While disconnected from the server, you can change the name, uncheck the trickle ice checkbox if you want to send candidates trough sdp only (Only works with WebRtc).
 While not in a call, you can choose the resolution you want your video to be displayed at.
 You can choose to use either ORTC or WebRTC on browsers that support both technologies.

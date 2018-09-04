@@ -1,5 +1,5 @@
 /*
- *   Copyright © Microsoft Open Technologies, Inc.
+ *   Copyright ï¿½ Microsoft Open Technologies, Inc.
  *   All Rights Reserved        
  *   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  *   the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -17,7 +17,7 @@
 
   var EventTarget = g.EventTarget;
 
-  /**
+  /*
    * A helper function for defining event listener properties (the onfoo property for the 'foo' event)
    * @param obj {EventTarget} the event target to attach the property to
    * @param name {string} the name of the event (without the 'on')

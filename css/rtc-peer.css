@@ -1,5 +1,15 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+.section{
+  font-family: Georgia, serif;
+}
+#video_holder{
+  margin-top: 10px;
+}
 #previewVideo,
-#videoholder {
+#peerVideo {
     background-color: #000;
     border: #FFF solid 1px;
 }
@@ -8,7 +18,11 @@
   position: absolute;
   margin: 5px 5px 0 5px;
 }
-#videoholder{
+#container{
+  width: 85%;
+  margin: 5px auto 10px auto;
+}
+#peerVideo{
   height: 77vh;
 }
 h2 {
@@ -83,6 +97,7 @@ label[for="toggleTrickleIce"] {
   font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
+  border-radius: 10px;
 }
 #resolution{
   text-align: center;
@@ -110,7 +125,6 @@ label[for="toggleTrickleIce"] {
 #toggle_contacts_label{
   position: fixed;
   border-radius: 0 8px 8px 0;
-  background-color: white;
   z-index: 2;
 }
 #toggle_contacts_label > *{
@@ -123,15 +137,24 @@ label[for="toggleTrickleIce"] {
   position: absolute;
   right: 0px;
   border-radius: 8px 0 0 8px;
-  background-color: white;
   z-index: 2;
 }
 #toggle_options_label > *{
   font-size: 2em;
 }
 #options{
-    right: 0;
-
+  right: 0;
+  line-height: 1.2rem;
+  font-size: 1.2rem;
+}
+.option>*{
+  width: 100%;
+}
+.option>input{
+  text-align: center;
+}
+.option{
+  margin: 0 0 15px 0;
 }
 .fadeOut {
   visibility: hidden;
@@ -156,22 +179,23 @@ input[type="button"]:disabled + .call_icon{
 .call_icon{
   color: green;
 }
-input#mute {
+input#disable_mic {
   display: none;
 }
 
-#mute_icon {
+#disable_mic_icon {
   color: red;
 }
 
-input#muteVideo {
+input#disable_cam {
   display: none;
 }
 #stateChange {
   display: flex;
   justify-content: center;
+  margin: 10px 0px;
 }
-#muteVideo_icon {
+#disable_cam_icon {
   color: red;
 }
 @media only screen and (max-width: 600px) {
@@ -183,3 +207,43 @@ input#muteVideo {
   }
 }
 
+
+
+.icons{
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 30%;
+  background-color: #FFF;
+}
+.icons:hover{
+  background-color: lightgray;
+}
+.inner_icons{
+  height: 80%;
+  width: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+#phone_icon{
+  background-image: url("../images/phone_icon_gray.png");
+}
+
+#disable_mic_icon{
+  background-image: url("../images/microphone_icon_red.png");
+}
+
+#webcam_icon{
+  background-image: url("../images/webcam_icon_red.png");
+}
+
+#contacts_icon{
+  background-image: url("../images/contacts.png");
+}
+
+#settings_icon{
+  background-image: url("../images/settings.png");
+}

@@ -1,0 +1,249 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+.section{
+  font-family: Georgia, serif;
+}
+#video_holder{
+  margin-top: 10px;
+}
+#previewVideo,
+#peerVideo {
+    background-color: #000;
+    border: #FFF solid 1px;
+}
+#previewVideo{
+  z-index: 1;
+  position: absolute;
+  margin: 5px 5px 0 5px;
+}
+#container{
+  width: 85%;
+  margin: 5px auto 10px auto;
+}
+#peerVideo{
+  height: 77vh;
+}
+h2 {
+  font: 400 40px/1.5 Helvetica, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+li {
+  font: 200 20px/1.5 Helvetica, Verdana, sans-serif;
+  border-bottom: 1px solid #ccc;
+}
+li:last-child {
+  border: none;
+}
+li a {
+  text-decoration: none;
+  display: block;
+  width: 200px;
+  color: #e8736a;
+ 
+  -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -o-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
+  transition: font-size 0.3s ease, background-color 0.3s ease;
+}
+#contactList{
+  margin: 0 0 15px 0;
+  border-bottom: 1px solid #ccc;
+}
+#showName{
+  text-align: center;
+  padding: 10px 0;
+}
+#showName>p{
+  margin-top: 10px;
+  font-weight: bold;
+  font-size: 20px;
+}
+#changeName>*{
+  margin-bottom: 5px;
+}
+#toggleTrickleIce{
+  position: static;
+}
+label[for="toggleTrickleIce"] {
+  font-size: 22px;
+}
+#connect_wrap{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#connect_wrap>*{
+  min-width: 30%;
+}
+#connect_btn{
+  background-color: #008CBA;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  height: 50px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+#resolution{
+  text-align: center;
+}
+.sidebar{
+  
+    position: fixed;
+    background-color: white;
+    border-width:5px;  
+    border-style:double;
+    border-color: gray;    
+    z-index: 2;
+    min-height: 100vh;
+    width: 200px;
+    padding: 5px;
+    overflow: auto;
+
+}
+.contact a:focus{
+  color: #6ceb74;
+}
+#toggle_contacts{
+  display: none;
+}
+#toggle_contacts_label{
+  position: fixed;
+  border-radius: 0 8px 8px 0;
+  z-index: 2;
+}
+#toggle_contacts_label > *{
+  font-size: 2em;
+}
+#toggle_options{
+  display: none;
+}
+#toggle_options_label{
+  position: absolute;
+  right: 0px;
+  border-radius: 8px 0 0 8px;
+  z-index: 2;
+}
+#toggle_options_label > *{
+  font-size: 2em;
+}
+#options{
+  right: 0;
+  line-height: 1.2rem;
+  font-size: 1.2rem;
+}
+.option>*{
+  width: 100%;
+}
+.option>input{
+  text-align: center;
+}
+.option{
+  margin: 0 0 15px 0;
+}
+.fadeOut {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 600ms, opacity 300ms;
+}
+.fadeIn {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 300ms;
+}
+.fas{
+  font-size: 40px;
+  margin: 10px;
+}
+#call_btn{
+  display: none;
+}
+input[type="button"]:disabled + .call_icon{
+  color: gray;
+}
+.call_icon{
+  color: green;
+}
+input#disable_mic {
+  display: none;
+}
+
+#disable_mic_icon {
+  color: red;
+}
+
+input#disable_cam {
+  display: none;
+}
+#stateChange {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0px;
+}
+#disable_cam_icon {
+  color: red;
+}
+@media only screen and (max-width: 600px) {
+  #connect_wrap > *{
+    min-width: 35%;
+  }
+  #showName{
+    min-width: 80%;
+  }
+}
+
+
+
+.icons{
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 30%;
+  background-color: #FFF;
+}
+.icons:hover{
+  background-color: lightgray;
+}
+.inner_icons{
+  height: 80%;
+  width: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+#phone_icon{
+  background-image: url("../images/phone_icon_gray.png");
+}
+
+#disable_mic_icon{
+  background-image: url("../images/microphone_icon_red.png");
+}
+
+#webcam_icon{
+  background-image: url("../images/webcam_icon_red.png");
+}
+
+#contacts_icon{
+  background-image: url("../images/contacts.png");
+}
+
+#settings_icon{
+  background-image: url("../images/settings.png");
+}

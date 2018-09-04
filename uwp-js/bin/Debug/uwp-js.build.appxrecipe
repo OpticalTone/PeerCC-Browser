@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Machine>DESKTOP-11Q0SJ4</Machine>
+    <WindowsUser>no password</WindowsUser>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetOsVersion>10.0</TargetOsVersion>
+    <TargetOsDescription>Windows 10.0</TargetOsDescription>
+    <SolutionConfiguration>Debug|AnyCPU</SolutionConfiguration>
+    <PackageArchitecture>neutral</PackageArchitecture>
+    <PackageIdentityName>002e2543-2c5a-4e72-9462-72ee4bc0fe31</PackageIdentityName>
+    <PackageIdentityPublisher>CN=nikola</PackageIdentityPublisher>
+    <IntermediateOutputPath>C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\bld\Debug\</IntermediateOutputPath>
+    <RemoteDeploymentType></RemoteDeploymentType>
+    <PackageRegistrationPath></PackageRegistrationPath>
+    <RemoveNonLayoutFiles>true</RemoveNonLayoutFiles>
+    <DeployOptionalPackages>false</DeployOptionalPackages>
+    <WindowsSdkPath></WindowsSdkPath>
+    <LayoutDir>C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\bin\Debug\AppX</LayoutDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <AppXManifest Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\bin\Debug\AppxManifest.xml">
+      <PackagePath>AppxManifest.xml</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppXManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\css\rtc-peer.css">
+      <PackagePath>css\rtc-peer.css</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\contacts.png">
+      <PackagePath>images\contacts.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\Microphone_icon_black.png">
+      <PackagePath>images\Microphone_icon_black.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\microphone_icon_red.png">
+      <PackagePath>images\microphone_icon_red.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\phone_icon_black.png">
+      <PackagePath>images\phone_icon_black.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\phone_icon_gray.png">
+      <PackagePath>images\phone_icon_gray.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\phone_icon_green.png">
+      <PackagePath>images\phone_icon_green.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\phone_icon_red.png">
+      <PackagePath>images\phone_icon_red.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\settings.png">
+      <PackagePath>images\settings.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\webcam_icon_black.png">
+      <PackagePath>images\webcam_icon_black.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\webcam_icon_red.png">
+      <PackagePath>images\webcam_icon_red.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\LockScreenLogo.scale-200.png">
+      <PackagePath>images\LockScreenLogo.scale-200.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\SplashScreen.scale-200.png">
+      <PackagePath>images\SplashScreen.scale-200.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\Square150x150Logo.scale-200.png">
+      <PackagePath>images\Square150x150Logo.scale-200.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\Square44x44Logo.scale-200.png">
+      <PackagePath>images\Square44x44Logo.scale-200.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <PackagePath>images\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\StoreLogo.png">
+      <PackagePath>images\StoreLogo.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\images\Wide310x150Logo.scale-200.png">
+      <PackagePath>images\Wide310x150Logo.scale-200.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\index.html">
+      <PackagePath>index.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\js\checkRTCSupport.js">
+      <PackagePath>js\checkRTCSupport.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\js\defineEventProperty.js">
+      <PackagePath>js\defineEventProperty.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\js\estetics.js">
+      <PackagePath>js\estetics.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\js\eventTarget.js">
+      <PackagePath>js\eventTarget.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\js\objext.js">
+      <PackagePath>js\objext.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\js\RTC.js">
+      <PackagePath>js\RTC.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\js\signallingchannel.js">
+      <PackagePath>js\signallingchannel.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\Gruntfile.js">
+      <PackagePath>node_modules\webrtc-adapter\Gruntfile.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\karma.conf.js">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\karma.conf.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\rtcpeerconnection.js">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\rtcpeerconnection.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\sdp\sdp.js">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\sdp\sdp.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\out\adapter.js">
+      <PackagePath>node_modules\webrtc-adapter\out\adapter.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\out\adapter_no_edge.js">
+      <PackagePath>node_modules\webrtc-adapter\out\adapter_no_edge.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\out\adapter_no_edge_no_global.js">
+      <PackagePath>node_modules\webrtc-adapter\out\adapter_no_edge_no_global.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\out\adapter_no_global.js">
+      <PackagePath>node_modules\webrtc-adapter\out\adapter_no_global.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\adapter_core.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\adapter_core.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\adapter_factory.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\adapter_factory.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\chrome\chrome_shim.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\chrome\chrome_shim.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\chrome\getusermedia.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\chrome\getusermedia.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\common_shim.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\common_shim.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\edge\edge_shim.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\edge\edge_shim.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\edge\getusermedia.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\edge\getusermedia.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\firefox\firefox_shim.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\firefox\firefox_shim.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\firefox\getusermedia.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\firefox\getusermedia.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\safari\safari_shim.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\safari\safari_shim.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\src\js\utils.js">
+      <PackagePath>node_modules\webrtc-adapter\src\js\utils.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\socket.io\socket.io.js">
+      <PackagePath>socket.io\socket.io.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\.eslintrc">
+      <PackagePath>node_modules\webrtc-adapter\.eslintrc</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\.eslintrc">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\.eslintrc</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\.travis.yml">
+      <PackagePath>node_modules\webrtc-adapter\.travis.yml</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\.travis.yml">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\.travis.yml</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\sdp\.travis.yml">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\sdp\.travis.yml</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\bower.json">
+      <PackagePath>node_modules\webrtc-adapter\bower.json</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\package.json">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\package.json</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\sdp\package.json">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\sdp\package.json</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\package.json">
+      <PackagePath>node_modules\webrtc-adapter\package.json</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\CONTRIBUTING.md">
+      <PackagePath>node_modules\webrtc-adapter\CONTRIBUTING.md</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\ISSUE_TEMPLATE.md">
+      <PackagePath>node_modules\webrtc-adapter\ISSUE_TEMPLATE.md</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\LICENSE.md">
+      <PackagePath>node_modules\webrtc-adapter\LICENSE.md</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\LICENSE.md">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\LICENSE.md</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\README.md">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\rtcpeerconnection-shim\README.md</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\sdp\CONTRIBUTING.md">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\sdp\CONTRIBUTING.md</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\sdp\README.md">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\sdp\README.md</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\PULL_REQUEST_TEMPLATE.md">
+      <PackagePath>node_modules\webrtc-adapter\PULL_REQUEST_TEMPLATE.md</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\README-w3c-tests.md">
+      <PackagePath>node_modules\webrtc-adapter\README-w3c-tests.md</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\README.md">
+      <PackagePath>node_modules\webrtc-adapter\README.md</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\node_modules\webrtc-adapter\node_modules\sdp\LICENSE">
+      <PackagePath>node_modules\webrtc-adapter\node_modules\sdp\LICENSE</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\nikol\OneDrive\WebRTC\uwp-js\uwp-js\bin\Debug\ReverseMap\resources.pri">
+      <PackagePath>resources.pri</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+</Project>

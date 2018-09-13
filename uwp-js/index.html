@@ -35,12 +35,12 @@
         </div>
         <div id="options_wrap">
             <div id="options" class="sidebar fadeOut">
-            <div class="option">
+                <div class="option">
                     <b>Server address: </b>
-                <input id="server_address" type="input" onclick="this.select();" value="peercc-server.ortclib.org"> 
-                <b>Server port: </b>
-                <input id="server_port" type="input" onclick="this.select();" value="8888">
-            </div>
+                    <input id="server_address" type="input" onclick="this.select();" value="peercc-server.ortclib.org">
+                    <b>Server port: </b>
+                    <input id="server_port" type="input" onclick="this.select();" value="8888">
+                </div>
                 <div class="option"><b>Select resolution: </b>
                     <select id="resolution">
                         <option value="320x180">320 x 180</option>
@@ -71,9 +71,9 @@
                 </form>
                 <div class="option">
                     <div id="selectTechWrap">
-                        <b>Select technology:</b>
-                        ORTC <input type="radio" name="selectTech" id="ORTC_selected" value="ORTC" checked> WebRTC <input
-                            type="radio" name="selectTech" id="WebRTC_selected" value="WebRTC">
+                        <b>Select technology:</b><br>
+                        <input type="radio" name="selectTech" id="ORTC_selected" value="ORTC"> ORTC <input type="radio" name="selectTech"
+                            id="WebRTC_selected" value="WebRTC" checked> WebRTC
                     </div>
                 </div>
                 <div class="option">
@@ -103,9 +103,16 @@
                 </div>
                 <div id="showName">
                     <h3>Your name: </h3>
-                    <p id="name"></p>
+                    <p id="name">
+                    </p>
                 </div>
-                <div></div>
+                <div class="option">
+                    <div id="share_select" >
+                        <b>Select for sharing:</b><br>
+                        <input type="radio" name="selectShare" id="webcam_selected" value="webcam" checked> <label for="webcam_selected">Webcam</label>
+                        <input type="radio" name="selectShare" id="screen_selected" value="WebRTC"> <label for="screen_selected">Screen</label>
+                    </div>
+                </div>
             </div>
             <div id="video_holder">
                 <section id="videoPreview">

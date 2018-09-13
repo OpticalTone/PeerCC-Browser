@@ -1,7 +1,6 @@
 (function(global) {
   "use strict";
 
-
   var pc;
   var serverAddress;
   var serverPort;
@@ -612,10 +611,35 @@
   function getMedia() {
     updateMediaConstraints();
     // Get a local stream
-    navigator.mediaDevices
-      .getUserMedia(mediaConstraints)
-      .then(gotMediaSDP)
-      .catch(gotMediaError);
+
+    if (document.getElementById("webcam_selected").checked) {
+      navigator.mediaDevices
+        .getUserMedia(mediaConstraints)
+        .then(gotMediaSDP)
+        .catch(gotMediaError);
+    } else {
+      if ("getDisplayMedia" in window.navigator) {
+        navigator
+          .getDisplayMedia({ video: true })
+          .then(gotMediaSDP)
+          .catch(gotMediaError);
+      } else {
+        if (adapter.browserDetails.browser == "firefox") {
+          navigator.mediaDevices
+            .getUserMedia({ video: { mediaSource: "screen" } })
+            .then(gotMediaSDP)
+            .catch(gotMediaError);
+        } else {
+          navigator.mediaDevices
+            .getUserMedia({
+              audio: false,
+              video: { mandatory: { chromeMediaSource: "screen" } }
+            })
+            .then(gotMediaSDP)
+            .catch(gotMediaError);
+        }
+      }
+    }
   }
 
   function gotMediaSDP(stream) {

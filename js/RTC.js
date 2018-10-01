@@ -120,14 +120,6 @@
 
     initialize();
   };
-  // Create and initialze the MediaCapture object.
-  function initMediaCapture() {
-    oMediaCapture = null;
-    oMediaCapture = new Windows.Media.Capture.MediaCapture();
-    oMediaCapture.initializeAsync(captureInitSettings).then(function(result) {
-      createProfile();
-    }, errorHandler);
-  }
 
   function initialize() {
     try {
@@ -243,11 +235,10 @@
       }
     };
   }
-
   function updateMediaConstraints() {
     let resolution = document.getElementById("resolution");
     let selectedOption = resolution.options[resolution.selectedIndex].value;
-
+    
     selectedResolution["width"] = selectedOption.substr(
       0.0,
       selectedOption.indexOf("x")
@@ -258,14 +249,32 @@
       selectedOption.length
     );
 
-    mediaConstraints = {
-      audio: true,
-      video: {
-        width: { max: selectedResolution["width"] },
-        height: { max: selectedResolution["height"] }
-      }
-    };
+    let constraints = new Object();
+    constraints.audio = true;
+    constraints.video = new Object();
 
+    if (document.getElementById("webcam_selected").checked) {
+      constraints.audio = true;
+      constraints.video.width = { max: selectedResolution["width"] };
+      constraints.video.height = { max: selectedResolution["height"] };
+    } else if(
+      "getDisplayMedia" in window.navigator &&
+      document.getElementById("screen_selected").checked){        
+        constraints.video = true;
+    }
+     else {
+        if (adapter.browserDetails.browser == "firefox") {
+          constraints.video.mediaSource = "screen";
+        } else if (adapter.browserDetails.browser == "chrome") {
+          constraints.audio = false;
+          constraints.video.mandatory = {chromeMediaSource: "desktop"};
+        } else {
+          constraints.audio = false;
+          constraints.video.mandatory = {chromeMediaSource: "screen"};
+        }      
+    }
+    mediaConstraints = JSON.parse(JSON.stringify(constraints));
+    console.log(mediaConstraints);
     console.log("Media constraints changed.");
   }
 
@@ -609,45 +618,21 @@
   }
 
   function getMedia() {
-    updateMediaConstraints();
     // Get a local stream
-
-    if (document.getElementById("webcam_selected").checked) {
+    updateMediaConstraints();
+    if (
+      "getDisplayMedia" in window.navigator &&
+      document.getElementById("screen_selected").checked
+    ) {
+      navigator
+        .getDisplayMedia(mediaConstraints)
+        .then(gotMediaSDP)
+        .catch(gotMediaError);
+    } else {
       navigator.mediaDevices
         .getUserMedia(mediaConstraints)
         .then(gotMediaSDP)
         .catch(gotMediaError);
-    } else {
-      if ("getDisplayMedia" in window.navigator) {
-        navigator
-          .getDisplayMedia({ video: true })
-          .then(gotMediaSDP)
-          .catch(gotMediaError);
-      } else {
-        if (adapter.browserDetails.browser == "firefox") {
-          navigator.mediaDevices
-            .getUserMedia({ video: { mediaSource: "screen" } })
-            .then(gotMediaSDP)
-            .catch(gotMediaError);
-        } else if(adapter.browserDetails.browser == "chrome"){
-          navigator.mediaDevices
-            .getUserMedia({
-              audio: false,
-              video: { mandatory: { chromeMediaSource: "desktop" } }
-            })
-            .then(gotMediaSDP)
-            .catch(gotMediaError);
-        }
-        else{
-          navigator.mediaDevices
-            .getUserMedia({
-              audio: false,
-              video: { mandatory: { chromeMediaSource: "screen" } }
-            })
-            .then(gotMediaSDP)
-            .catch(gotMediaError);
-        }
-      }
     }
   }
 

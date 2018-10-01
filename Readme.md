@@ -48,7 +48,7 @@ Screen share is currently supported on:
 *Firefox* - Pc version  
 *Chrome* - Desktop version (See description below on how to enable)  
 *Chrome* - Android version (See description below on how to enable)  
-To enable screen share on **Chrome - Android**, you will need to go to the page chrome://flags and there you will need to enable *Experimental ScreenCapture* flag. As soon as you enable the flag RELAUNCH NOW button will show up, click on it and after the Chrome restarts itself you should be able to use the screen share option of this app.
+To enable screen share on **Chrome - Android**, you will need to go to the page chrome://flags and there you will need to enable *Experimental ScreenCapture* flag. As soon as you enable the flag RELAUNCH NOW button will show up, click on it and after the Chrome restarts itself you should be able to use the screen share option of this app.  
 To enable screen share on **Chrome - Desktop** before starting Chrome, right click on the Chrome icon and go to properties, there you should be able to see  input field called `target`, at the end of that field append the following command `--enable-usermedia-screen-capturing` then click OK and run Chrome, You should now be able to screen share from Chrome.
 
 ### Options

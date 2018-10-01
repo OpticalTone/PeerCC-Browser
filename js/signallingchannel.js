@@ -182,7 +182,7 @@
     }
 
     if (data.sdp) {
-      console.log("SEND sdp");
+      console.log("Sdp Sent: " + JSON.stringify(data.sdp));
 
       message = JSON.stringify({
         type: data.sdp.type,

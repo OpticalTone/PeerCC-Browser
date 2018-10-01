@@ -98,7 +98,7 @@
 
         <div id="container">
             <div id="connect_wrap">
-                <div>
+                <div id="connect_btn_wrap">
                     <input id="connect_btn" type="button" value="Connect">
                 </div>
                 <div id="showName">
@@ -110,18 +110,8 @@
                     <div id="share_select" >
                         <b>Select for sharing:</b><br>
                         <input type="radio" name="selectShare" id="webcam_selected" value="webcam" checked> <label for="webcam_selected">Webcam</label>
-                        <input type="radio" name="selectShare" id="screen_selected" value="WebRTC"> <label for="screen_selected">Screen</label>
+                        <input type="radio" name="selectShare" id="screen_selected" value="screen" > <label for="screen_selected">Screen</label>
                     </div>
-                </div>
-            </div>
-            <div id="video_holder">
-                <section id="videoPreview">
-                    <div>
-                        <video id="previewVideo" width="248" height="140" autoplay muted></video>
-                    </div>
-                </section>
-                <div id="peerVideo">
-                    <video id="rtcRenderer" width="100%" height="100%" autoplay></video>
                 </div>
             </div>
             <section class="connect-form">
@@ -146,6 +136,16 @@
                     </label>
                 </div>
             </section>
+            <div id="video_holder">
+                <section id="videoPreview">
+                    <div>
+                        <video id="previewVideo" width="248" height="140" autoplay muted></video>
+                    </div>
+                </section>
+                <div id="peerVideo">
+                    <video id="rtcRenderer" width="100%" height="100%" autoplay></video>
+                </div>
+            </div>
         </div>
     </section>
 

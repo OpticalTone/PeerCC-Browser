@@ -85,6 +85,10 @@ label[for="toggleTrickleIce"] {
 #connect_wrap>*{
   min-width: 30%;
 }
+#connect_btn_wrap{
+  display: flex;
+  justify-content: center;
+}
 #connect_btn{
   background-color: #008CBA;
   border: none;

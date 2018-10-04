@@ -1,7 +1,7 @@
 (function(global) {
   "use strict";
 
-  var proxy = true;
+  var proxy = false;
 
   var self = null;
   var clientSocket = null;

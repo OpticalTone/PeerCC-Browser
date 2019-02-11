@@ -292,6 +292,8 @@
 
   function connectToServer() {
     if (sigCh) {
+      serverAddress = document.getElementById("server_address").value;
+      serverPort = document.getElementById("server_port").value;
       var elServerAddress = serverAddress;
       var elServerPort = serverPort;
       var info = JSON.stringify({
